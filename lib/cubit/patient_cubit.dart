@@ -10,5 +10,9 @@ class PatientCubit extends Cubit<PatientState> {
 
   PatientCubit(this.patientDao) : super(PatientInitial());
 
+  moveStateToAdd(){
+    emit(PatientAdd());
+  }
+
 
 }
