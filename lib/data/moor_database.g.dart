@@ -576,21 +576,946 @@ class $PatientsTable extends Patients with TableInfo<$PatientsTable, Patient> {
   }
 }
 
+class Medic extends DataClass implements Insertable<Medic> {
+  final int medicID;
+  final String medicNom;
+  final String medicLab;
+  final double presentation;
+  final double cI;
+  final double cMin;
+  final double cMax;
+  final double volume;
+  final double prix;
+  final double stabilite;
+  Medic(
+      {@required this.medicID,
+      @required this.medicNom,
+      @required this.medicLab,
+      @required this.presentation,
+      @required this.cI,
+      @required this.cMin,
+      @required this.cMax,
+      @required this.volume,
+      @required this.prix,
+      @required this.stabilite});
+  factory Medic.fromData(Map<String, dynamic> data, GeneratedDatabase db,
+      {String prefix}) {
+    final effectivePrefix = prefix ?? '';
+    final intType = db.typeSystem.forDartType<int>();
+    final stringType = db.typeSystem.forDartType<String>();
+    final doubleType = db.typeSystem.forDartType<double>();
+    return Medic(
+      medicID:
+          intType.mapFromDatabaseResponse(data['${effectivePrefix}medic_i_d']),
+      medicNom: stringType
+          .mapFromDatabaseResponse(data['${effectivePrefix}medic_nom']),
+      medicLab: stringType
+          .mapFromDatabaseResponse(data['${effectivePrefix}medic_lab']),
+      presentation: doubleType
+          .mapFromDatabaseResponse(data['${effectivePrefix}presentation']),
+      cI: doubleType.mapFromDatabaseResponse(data['${effectivePrefix}c_i']),
+      cMin: doubleType.mapFromDatabaseResponse(data['${effectivePrefix}c_min']),
+      cMax: doubleType.mapFromDatabaseResponse(data['${effectivePrefix}c_max']),
+      volume:
+          doubleType.mapFromDatabaseResponse(data['${effectivePrefix}volume']),
+      prix: doubleType.mapFromDatabaseResponse(data['${effectivePrefix}prix']),
+      stabilite: doubleType
+          .mapFromDatabaseResponse(data['${effectivePrefix}stabilite']),
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (!nullToAbsent || medicID != null) {
+      map['medic_i_d'] = Variable<int>(medicID);
+    }
+    if (!nullToAbsent || medicNom != null) {
+      map['medic_nom'] = Variable<String>(medicNom);
+    }
+    if (!nullToAbsent || medicLab != null) {
+      map['medic_lab'] = Variable<String>(medicLab);
+    }
+    if (!nullToAbsent || presentation != null) {
+      map['presentation'] = Variable<double>(presentation);
+    }
+    if (!nullToAbsent || cI != null) {
+      map['c_i'] = Variable<double>(cI);
+    }
+    if (!nullToAbsent || cMin != null) {
+      map['c_min'] = Variable<double>(cMin);
+    }
+    if (!nullToAbsent || cMax != null) {
+      map['c_max'] = Variable<double>(cMax);
+    }
+    if (!nullToAbsent || volume != null) {
+      map['volume'] = Variable<double>(volume);
+    }
+    if (!nullToAbsent || prix != null) {
+      map['prix'] = Variable<double>(prix);
+    }
+    if (!nullToAbsent || stabilite != null) {
+      map['stabilite'] = Variable<double>(stabilite);
+    }
+    return map;
+  }
+
+  MedicsCompanion toCompanion(bool nullToAbsent) {
+    return MedicsCompanion(
+      medicID: medicID == null && nullToAbsent
+          ? const Value.absent()
+          : Value(medicID),
+      medicNom: medicNom == null && nullToAbsent
+          ? const Value.absent()
+          : Value(medicNom),
+      medicLab: medicLab == null && nullToAbsent
+          ? const Value.absent()
+          : Value(medicLab),
+      presentation: presentation == null && nullToAbsent
+          ? const Value.absent()
+          : Value(presentation),
+      cI: cI == null && nullToAbsent ? const Value.absent() : Value(cI),
+      cMin: cMin == null && nullToAbsent ? const Value.absent() : Value(cMin),
+      cMax: cMax == null && nullToAbsent ? const Value.absent() : Value(cMax),
+      volume:
+          volume == null && nullToAbsent ? const Value.absent() : Value(volume),
+      prix: prix == null && nullToAbsent ? const Value.absent() : Value(prix),
+      stabilite: stabilite == null && nullToAbsent
+          ? const Value.absent()
+          : Value(stabilite),
+    );
+  }
+
+  factory Medic.fromJson(Map<String, dynamic> json,
+      {ValueSerializer serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return Medic(
+      medicID: serializer.fromJson<int>(json['medicID']),
+      medicNom: serializer.fromJson<String>(json['medicNom']),
+      medicLab: serializer.fromJson<String>(json['medicLab']),
+      presentation: serializer.fromJson<double>(json['presentation']),
+      cI: serializer.fromJson<double>(json['cI']),
+      cMin: serializer.fromJson<double>(json['cMin']),
+      cMax: serializer.fromJson<double>(json['cMax']),
+      volume: serializer.fromJson<double>(json['volume']),
+      prix: serializer.fromJson<double>(json['prix']),
+      stabilite: serializer.fromJson<double>(json['stabilite']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'medicID': serializer.toJson<int>(medicID),
+      'medicNom': serializer.toJson<String>(medicNom),
+      'medicLab': serializer.toJson<String>(medicLab),
+      'presentation': serializer.toJson<double>(presentation),
+      'cI': serializer.toJson<double>(cI),
+      'cMin': serializer.toJson<double>(cMin),
+      'cMax': serializer.toJson<double>(cMax),
+      'volume': serializer.toJson<double>(volume),
+      'prix': serializer.toJson<double>(prix),
+      'stabilite': serializer.toJson<double>(stabilite),
+    };
+  }
+
+  Medic copyWith(
+          {int medicID,
+          String medicNom,
+          String medicLab,
+          double presentation,
+          double cI,
+          double cMin,
+          double cMax,
+          double volume,
+          double prix,
+          double stabilite}) =>
+      Medic(
+        medicID: medicID ?? this.medicID,
+        medicNom: medicNom ?? this.medicNom,
+        medicLab: medicLab ?? this.medicLab,
+        presentation: presentation ?? this.presentation,
+        cI: cI ?? this.cI,
+        cMin: cMin ?? this.cMin,
+        cMax: cMax ?? this.cMax,
+        volume: volume ?? this.volume,
+        prix: prix ?? this.prix,
+        stabilite: stabilite ?? this.stabilite,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('Medic(')
+          ..write('medicID: $medicID, ')
+          ..write('medicNom: $medicNom, ')
+          ..write('medicLab: $medicLab, ')
+          ..write('presentation: $presentation, ')
+          ..write('cI: $cI, ')
+          ..write('cMin: $cMin, ')
+          ..write('cMax: $cMax, ')
+          ..write('volume: $volume, ')
+          ..write('prix: $prix, ')
+          ..write('stabilite: $stabilite')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => $mrjf($mrjc(
+      medicID.hashCode,
+      $mrjc(
+          medicNom.hashCode,
+          $mrjc(
+              medicLab.hashCode,
+              $mrjc(
+                  presentation.hashCode,
+                  $mrjc(
+                      cI.hashCode,
+                      $mrjc(
+                          cMin.hashCode,
+                          $mrjc(
+                              cMax.hashCode,
+                              $mrjc(
+                                  volume.hashCode,
+                                  $mrjc(prix.hashCode,
+                                      stabilite.hashCode))))))))));
+  @override
+  bool operator ==(dynamic other) =>
+      identical(this, other) ||
+      (other is Medic &&
+          other.medicID == this.medicID &&
+          other.medicNom == this.medicNom &&
+          other.medicLab == this.medicLab &&
+          other.presentation == this.presentation &&
+          other.cI == this.cI &&
+          other.cMin == this.cMin &&
+          other.cMax == this.cMax &&
+          other.volume == this.volume &&
+          other.prix == this.prix &&
+          other.stabilite == this.stabilite);
+}
+
+class MedicsCompanion extends UpdateCompanion<Medic> {
+  final Value<int> medicID;
+  final Value<String> medicNom;
+  final Value<String> medicLab;
+  final Value<double> presentation;
+  final Value<double> cI;
+  final Value<double> cMin;
+  final Value<double> cMax;
+  final Value<double> volume;
+  final Value<double> prix;
+  final Value<double> stabilite;
+  const MedicsCompanion({
+    this.medicID = const Value.absent(),
+    this.medicNom = const Value.absent(),
+    this.medicLab = const Value.absent(),
+    this.presentation = const Value.absent(),
+    this.cI = const Value.absent(),
+    this.cMin = const Value.absent(),
+    this.cMax = const Value.absent(),
+    this.volume = const Value.absent(),
+    this.prix = const Value.absent(),
+    this.stabilite = const Value.absent(),
+  });
+  MedicsCompanion.insert({
+    this.medicID = const Value.absent(),
+    @required String medicNom,
+    @required String medicLab,
+    @required double presentation,
+    @required double cI,
+    @required double cMin,
+    @required double cMax,
+    @required double volume,
+    @required double prix,
+    @required double stabilite,
+  })  : medicNom = Value(medicNom),
+        medicLab = Value(medicLab),
+        presentation = Value(presentation),
+        cI = Value(cI),
+        cMin = Value(cMin),
+        cMax = Value(cMax),
+        volume = Value(volume),
+        prix = Value(prix),
+        stabilite = Value(stabilite);
+  static Insertable<Medic> custom({
+    Expression<int> medicID,
+    Expression<String> medicNom,
+    Expression<String> medicLab,
+    Expression<double> presentation,
+    Expression<double> cI,
+    Expression<double> cMin,
+    Expression<double> cMax,
+    Expression<double> volume,
+    Expression<double> prix,
+    Expression<double> stabilite,
+  }) {
+    return RawValuesInsertable({
+      if (medicID != null) 'medic_i_d': medicID,
+      if (medicNom != null) 'medic_nom': medicNom,
+      if (medicLab != null) 'medic_lab': medicLab,
+      if (presentation != null) 'presentation': presentation,
+      if (cI != null) 'c_i': cI,
+      if (cMin != null) 'c_min': cMin,
+      if (cMax != null) 'c_max': cMax,
+      if (volume != null) 'volume': volume,
+      if (prix != null) 'prix': prix,
+      if (stabilite != null) 'stabilite': stabilite,
+    });
+  }
+
+  MedicsCompanion copyWith(
+      {Value<int> medicID,
+      Value<String> medicNom,
+      Value<String> medicLab,
+      Value<double> presentation,
+      Value<double> cI,
+      Value<double> cMin,
+      Value<double> cMax,
+      Value<double> volume,
+      Value<double> prix,
+      Value<double> stabilite}) {
+    return MedicsCompanion(
+      medicID: medicID ?? this.medicID,
+      medicNom: medicNom ?? this.medicNom,
+      medicLab: medicLab ?? this.medicLab,
+      presentation: presentation ?? this.presentation,
+      cI: cI ?? this.cI,
+      cMin: cMin ?? this.cMin,
+      cMax: cMax ?? this.cMax,
+      volume: volume ?? this.volume,
+      prix: prix ?? this.prix,
+      stabilite: stabilite ?? this.stabilite,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (medicID.present) {
+      map['medic_i_d'] = Variable<int>(medicID.value);
+    }
+    if (medicNom.present) {
+      map['medic_nom'] = Variable<String>(medicNom.value);
+    }
+    if (medicLab.present) {
+      map['medic_lab'] = Variable<String>(medicLab.value);
+    }
+    if (presentation.present) {
+      map['presentation'] = Variable<double>(presentation.value);
+    }
+    if (cI.present) {
+      map['c_i'] = Variable<double>(cI.value);
+    }
+    if (cMin.present) {
+      map['c_min'] = Variable<double>(cMin.value);
+    }
+    if (cMax.present) {
+      map['c_max'] = Variable<double>(cMax.value);
+    }
+    if (volume.present) {
+      map['volume'] = Variable<double>(volume.value);
+    }
+    if (prix.present) {
+      map['prix'] = Variable<double>(prix.value);
+    }
+    if (stabilite.present) {
+      map['stabilite'] = Variable<double>(stabilite.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MedicsCompanion(')
+          ..write('medicID: $medicID, ')
+          ..write('medicNom: $medicNom, ')
+          ..write('medicLab: $medicLab, ')
+          ..write('presentation: $presentation, ')
+          ..write('cI: $cI, ')
+          ..write('cMin: $cMin, ')
+          ..write('cMax: $cMax, ')
+          ..write('volume: $volume, ')
+          ..write('prix: $prix, ')
+          ..write('stabilite: $stabilite')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $MedicsTable extends Medics with TableInfo<$MedicsTable, Medic> {
+  final GeneratedDatabase _db;
+  final String _alias;
+  $MedicsTable(this._db, [this._alias]);
+  final VerificationMeta _medicIDMeta = const VerificationMeta('medicID');
+  GeneratedIntColumn _medicID;
+  @override
+  GeneratedIntColumn get medicID => _medicID ??= _constructMedicID();
+  GeneratedIntColumn _constructMedicID() {
+    return GeneratedIntColumn('medic_i_d', $tableName, false,
+        hasAutoIncrement: true, declaredAsPrimaryKey: true);
+  }
+
+  final VerificationMeta _medicNomMeta = const VerificationMeta('medicNom');
+  GeneratedTextColumn _medicNom;
+  @override
+  GeneratedTextColumn get medicNom => _medicNom ??= _constructMedicNom();
+  GeneratedTextColumn _constructMedicNom() {
+    return GeneratedTextColumn('medic_nom', $tableName, false,
+        minTextLength: 1, maxTextLength: 50);
+  }
+
+  final VerificationMeta _medicLabMeta = const VerificationMeta('medicLab');
+  GeneratedTextColumn _medicLab;
+  @override
+  GeneratedTextColumn get medicLab => _medicLab ??= _constructMedicLab();
+  GeneratedTextColumn _constructMedicLab() {
+    return GeneratedTextColumn('medic_lab', $tableName, false,
+        minTextLength: 1, maxTextLength: 50);
+  }
+
+  final VerificationMeta _presentationMeta =
+      const VerificationMeta('presentation');
+  GeneratedRealColumn _presentation;
+  @override
+  GeneratedRealColumn get presentation =>
+      _presentation ??= _constructPresentation();
+  GeneratedRealColumn _constructPresentation() {
+    return GeneratedRealColumn(
+      'presentation',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _cIMeta = const VerificationMeta('cI');
+  GeneratedRealColumn _cI;
+  @override
+  GeneratedRealColumn get cI => _cI ??= _constructCI();
+  GeneratedRealColumn _constructCI() {
+    return GeneratedRealColumn(
+      'c_i',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _cMinMeta = const VerificationMeta('cMin');
+  GeneratedRealColumn _cMin;
+  @override
+  GeneratedRealColumn get cMin => _cMin ??= _constructCMin();
+  GeneratedRealColumn _constructCMin() {
+    return GeneratedRealColumn(
+      'c_min',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _cMaxMeta = const VerificationMeta('cMax');
+  GeneratedRealColumn _cMax;
+  @override
+  GeneratedRealColumn get cMax => _cMax ??= _constructCMax();
+  GeneratedRealColumn _constructCMax() {
+    return GeneratedRealColumn(
+      'c_max',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _volumeMeta = const VerificationMeta('volume');
+  GeneratedRealColumn _volume;
+  @override
+  GeneratedRealColumn get volume => _volume ??= _constructVolume();
+  GeneratedRealColumn _constructVolume() {
+    return GeneratedRealColumn(
+      'volume',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _prixMeta = const VerificationMeta('prix');
+  GeneratedRealColumn _prix;
+  @override
+  GeneratedRealColumn get prix => _prix ??= _constructPrix();
+  GeneratedRealColumn _constructPrix() {
+    return GeneratedRealColumn(
+      'prix',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _stabiliteMeta = const VerificationMeta('stabilite');
+  GeneratedRealColumn _stabilite;
+  @override
+  GeneratedRealColumn get stabilite => _stabilite ??= _constructStabilite();
+  GeneratedRealColumn _constructStabilite() {
+    return GeneratedRealColumn(
+      'stabilite',
+      $tableName,
+      false,
+    );
+  }
+
+  @override
+  List<GeneratedColumn> get $columns => [
+        medicID,
+        medicNom,
+        medicLab,
+        presentation,
+        cI,
+        cMin,
+        cMax,
+        volume,
+        prix,
+        stabilite
+      ];
+  @override
+  $MedicsTable get asDslTable => this;
+  @override
+  String get $tableName => _alias ?? 'medics';
+  @override
+  final String actualTableName = 'medics';
+  @override
+  VerificationContext validateIntegrity(Insertable<Medic> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('medic_i_d')) {
+      context.handle(_medicIDMeta,
+          medicID.isAcceptableOrUnknown(data['medic_i_d'], _medicIDMeta));
+    }
+    if (data.containsKey('medic_nom')) {
+      context.handle(_medicNomMeta,
+          medicNom.isAcceptableOrUnknown(data['medic_nom'], _medicNomMeta));
+    } else if (isInserting) {
+      context.missing(_medicNomMeta);
+    }
+    if (data.containsKey('medic_lab')) {
+      context.handle(_medicLabMeta,
+          medicLab.isAcceptableOrUnknown(data['medic_lab'], _medicLabMeta));
+    } else if (isInserting) {
+      context.missing(_medicLabMeta);
+    }
+    if (data.containsKey('presentation')) {
+      context.handle(
+          _presentationMeta,
+          presentation.isAcceptableOrUnknown(
+              data['presentation'], _presentationMeta));
+    } else if (isInserting) {
+      context.missing(_presentationMeta);
+    }
+    if (data.containsKey('c_i')) {
+      context.handle(_cIMeta, cI.isAcceptableOrUnknown(data['c_i'], _cIMeta));
+    } else if (isInserting) {
+      context.missing(_cIMeta);
+    }
+    if (data.containsKey('c_min')) {
+      context.handle(
+          _cMinMeta, cMin.isAcceptableOrUnknown(data['c_min'], _cMinMeta));
+    } else if (isInserting) {
+      context.missing(_cMinMeta);
+    }
+    if (data.containsKey('c_max')) {
+      context.handle(
+          _cMaxMeta, cMax.isAcceptableOrUnknown(data['c_max'], _cMaxMeta));
+    } else if (isInserting) {
+      context.missing(_cMaxMeta);
+    }
+    if (data.containsKey('volume')) {
+      context.handle(_volumeMeta,
+          volume.isAcceptableOrUnknown(data['volume'], _volumeMeta));
+    } else if (isInserting) {
+      context.missing(_volumeMeta);
+    }
+    if (data.containsKey('prix')) {
+      context.handle(
+          _prixMeta, prix.isAcceptableOrUnknown(data['prix'], _prixMeta));
+    } else if (isInserting) {
+      context.missing(_prixMeta);
+    }
+    if (data.containsKey('stabilite')) {
+      context.handle(_stabiliteMeta,
+          stabilite.isAcceptableOrUnknown(data['stabilite'], _stabiliteMeta));
+    } else if (isInserting) {
+      context.missing(_stabiliteMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {medicID};
+  @override
+  Medic map(Map<String, dynamic> data, {String tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
+    return Medic.fromData(data, _db, prefix: effectivePrefix);
+  }
+
+  @override
+  $MedicsTable createAlias(String alias) {
+    return $MedicsTable(_db, alias);
+  }
+}
+
+class Dose extends DataClass implements Insertable<Dose> {
+  final int doseID;
+  final int patientid;
+  final int medicid;
+  final int posolgie;
+  final DateTime date;
+  Dose(
+      {@required this.doseID,
+      @required this.patientid,
+      @required this.medicid,
+      @required this.posolgie,
+      @required this.date});
+  factory Dose.fromData(Map<String, dynamic> data, GeneratedDatabase db,
+      {String prefix}) {
+    final effectivePrefix = prefix ?? '';
+    final intType = db.typeSystem.forDartType<int>();
+    final dateTimeType = db.typeSystem.forDartType<DateTime>();
+    return Dose(
+      doseID:
+          intType.mapFromDatabaseResponse(data['${effectivePrefix}dose_i_d']),
+      patientid:
+          intType.mapFromDatabaseResponse(data['${effectivePrefix}patientid']),
+      medicid:
+          intType.mapFromDatabaseResponse(data['${effectivePrefix}medicid']),
+      posolgie:
+          intType.mapFromDatabaseResponse(data['${effectivePrefix}posolgie']),
+      date:
+          dateTimeType.mapFromDatabaseResponse(data['${effectivePrefix}date']),
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (!nullToAbsent || doseID != null) {
+      map['dose_i_d'] = Variable<int>(doseID);
+    }
+    if (!nullToAbsent || patientid != null) {
+      map['patientid'] = Variable<int>(patientid);
+    }
+    if (!nullToAbsent || medicid != null) {
+      map['medicid'] = Variable<int>(medicid);
+    }
+    if (!nullToAbsent || posolgie != null) {
+      map['posolgie'] = Variable<int>(posolgie);
+    }
+    if (!nullToAbsent || date != null) {
+      map['date'] = Variable<DateTime>(date);
+    }
+    return map;
+  }
+
+  DosesCompanion toCompanion(bool nullToAbsent) {
+    return DosesCompanion(
+      doseID:
+          doseID == null && nullToAbsent ? const Value.absent() : Value(doseID),
+      patientid: patientid == null && nullToAbsent
+          ? const Value.absent()
+          : Value(patientid),
+      medicid: medicid == null && nullToAbsent
+          ? const Value.absent()
+          : Value(medicid),
+      posolgie: posolgie == null && nullToAbsent
+          ? const Value.absent()
+          : Value(posolgie),
+      date: date == null && nullToAbsent ? const Value.absent() : Value(date),
+    );
+  }
+
+  factory Dose.fromJson(Map<String, dynamic> json,
+      {ValueSerializer serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return Dose(
+      doseID: serializer.fromJson<int>(json['doseID']),
+      patientid: serializer.fromJson<int>(json['patientid']),
+      medicid: serializer.fromJson<int>(json['medicid']),
+      posolgie: serializer.fromJson<int>(json['posolgie']),
+      date: serializer.fromJson<DateTime>(json['date']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'doseID': serializer.toJson<int>(doseID),
+      'patientid': serializer.toJson<int>(patientid),
+      'medicid': serializer.toJson<int>(medicid),
+      'posolgie': serializer.toJson<int>(posolgie),
+      'date': serializer.toJson<DateTime>(date),
+    };
+  }
+
+  Dose copyWith(
+          {int doseID,
+          int patientid,
+          int medicid,
+          int posolgie,
+          DateTime date}) =>
+      Dose(
+        doseID: doseID ?? this.doseID,
+        patientid: patientid ?? this.patientid,
+        medicid: medicid ?? this.medicid,
+        posolgie: posolgie ?? this.posolgie,
+        date: date ?? this.date,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('Dose(')
+          ..write('doseID: $doseID, ')
+          ..write('patientid: $patientid, ')
+          ..write('medicid: $medicid, ')
+          ..write('posolgie: $posolgie, ')
+          ..write('date: $date')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => $mrjf($mrjc(
+      doseID.hashCode,
+      $mrjc(patientid.hashCode,
+          $mrjc(medicid.hashCode, $mrjc(posolgie.hashCode, date.hashCode)))));
+  @override
+  bool operator ==(dynamic other) =>
+      identical(this, other) ||
+      (other is Dose &&
+          other.doseID == this.doseID &&
+          other.patientid == this.patientid &&
+          other.medicid == this.medicid &&
+          other.posolgie == this.posolgie &&
+          other.date == this.date);
+}
+
+class DosesCompanion extends UpdateCompanion<Dose> {
+  final Value<int> doseID;
+  final Value<int> patientid;
+  final Value<int> medicid;
+  final Value<int> posolgie;
+  final Value<DateTime> date;
+  const DosesCompanion({
+    this.doseID = const Value.absent(),
+    this.patientid = const Value.absent(),
+    this.medicid = const Value.absent(),
+    this.posolgie = const Value.absent(),
+    this.date = const Value.absent(),
+  });
+  DosesCompanion.insert({
+    this.doseID = const Value.absent(),
+    @required int patientid,
+    @required int medicid,
+    @required int posolgie,
+    @required DateTime date,
+  })  : patientid = Value(patientid),
+        medicid = Value(medicid),
+        posolgie = Value(posolgie),
+        date = Value(date);
+  static Insertable<Dose> custom({
+    Expression<int> doseID,
+    Expression<int> patientid,
+    Expression<int> medicid,
+    Expression<int> posolgie,
+    Expression<DateTime> date,
+  }) {
+    return RawValuesInsertable({
+      if (doseID != null) 'dose_i_d': doseID,
+      if (patientid != null) 'patientid': patientid,
+      if (medicid != null) 'medicid': medicid,
+      if (posolgie != null) 'posolgie': posolgie,
+      if (date != null) 'date': date,
+    });
+  }
+
+  DosesCompanion copyWith(
+      {Value<int> doseID,
+      Value<int> patientid,
+      Value<int> medicid,
+      Value<int> posolgie,
+      Value<DateTime> date}) {
+    return DosesCompanion(
+      doseID: doseID ?? this.doseID,
+      patientid: patientid ?? this.patientid,
+      medicid: medicid ?? this.medicid,
+      posolgie: posolgie ?? this.posolgie,
+      date: date ?? this.date,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (doseID.present) {
+      map['dose_i_d'] = Variable<int>(doseID.value);
+    }
+    if (patientid.present) {
+      map['patientid'] = Variable<int>(patientid.value);
+    }
+    if (medicid.present) {
+      map['medicid'] = Variable<int>(medicid.value);
+    }
+    if (posolgie.present) {
+      map['posolgie'] = Variable<int>(posolgie.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<DateTime>(date.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DosesCompanion(')
+          ..write('doseID: $doseID, ')
+          ..write('patientid: $patientid, ')
+          ..write('medicid: $medicid, ')
+          ..write('posolgie: $posolgie, ')
+          ..write('date: $date')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $DosesTable extends Doses with TableInfo<$DosesTable, Dose> {
+  final GeneratedDatabase _db;
+  final String _alias;
+  $DosesTable(this._db, [this._alias]);
+  final VerificationMeta _doseIDMeta = const VerificationMeta('doseID');
+  GeneratedIntColumn _doseID;
+  @override
+  GeneratedIntColumn get doseID => _doseID ??= _constructDoseID();
+  GeneratedIntColumn _constructDoseID() {
+    return GeneratedIntColumn('dose_i_d', $tableName, false,
+        hasAutoIncrement: true, declaredAsPrimaryKey: true);
+  }
+
+  final VerificationMeta _patientidMeta = const VerificationMeta('patientid');
+  GeneratedIntColumn _patientid;
+  @override
+  GeneratedIntColumn get patientid => _patientid ??= _constructPatientid();
+  GeneratedIntColumn _constructPatientid() {
+    return GeneratedIntColumn('patientid', $tableName, false,
+        $customConstraints: 'REFERENCES patients(patientID)');
+  }
+
+  final VerificationMeta _medicidMeta = const VerificationMeta('medicid');
+  GeneratedIntColumn _medicid;
+  @override
+  GeneratedIntColumn get medicid => _medicid ??= _constructMedicid();
+  GeneratedIntColumn _constructMedicid() {
+    return GeneratedIntColumn('medicid', $tableName, false,
+        $customConstraints: 'REFERENCES medics(medicID)');
+  }
+
+  final VerificationMeta _posolgieMeta = const VerificationMeta('posolgie');
+  GeneratedIntColumn _posolgie;
+  @override
+  GeneratedIntColumn get posolgie => _posolgie ??= _constructPosolgie();
+  GeneratedIntColumn _constructPosolgie() {
+    return GeneratedIntColumn(
+      'posolgie',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _dateMeta = const VerificationMeta('date');
+  GeneratedDateTimeColumn _date;
+  @override
+  GeneratedDateTimeColumn get date => _date ??= _constructDate();
+  GeneratedDateTimeColumn _constructDate() {
+    return GeneratedDateTimeColumn(
+      'date',
+      $tableName,
+      false,
+    );
+  }
+
+  @override
+  List<GeneratedColumn> get $columns =>
+      [doseID, patientid, medicid, posolgie, date];
+  @override
+  $DosesTable get asDslTable => this;
+  @override
+  String get $tableName => _alias ?? 'doses';
+  @override
+  final String actualTableName = 'doses';
+  @override
+  VerificationContext validateIntegrity(Insertable<Dose> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('dose_i_d')) {
+      context.handle(_doseIDMeta,
+          doseID.isAcceptableOrUnknown(data['dose_i_d'], _doseIDMeta));
+    }
+    if (data.containsKey('patientid')) {
+      context.handle(_patientidMeta,
+          patientid.isAcceptableOrUnknown(data['patientid'], _patientidMeta));
+    } else if (isInserting) {
+      context.missing(_patientidMeta);
+    }
+    if (data.containsKey('medicid')) {
+      context.handle(_medicidMeta,
+          medicid.isAcceptableOrUnknown(data['medicid'], _medicidMeta));
+    } else if (isInserting) {
+      context.missing(_medicidMeta);
+    }
+    if (data.containsKey('posolgie')) {
+      context.handle(_posolgieMeta,
+          posolgie.isAcceptableOrUnknown(data['posolgie'], _posolgieMeta));
+    } else if (isInserting) {
+      context.missing(_posolgieMeta);
+    }
+    if (data.containsKey('date')) {
+      context.handle(
+          _dateMeta, date.isAcceptableOrUnknown(data['date'], _dateMeta));
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {doseID};
+  @override
+  Dose map(Map<String, dynamic> data, {String tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
+    return Dose.fromData(data, _db, prefix: effectivePrefix);
+  }
+
+  @override
+  $DosesTable createAlias(String alias) {
+    return $DosesTable(_db, alias);
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
   $PasswordsTable _passwords;
   $PasswordsTable get passwords => _passwords ??= $PasswordsTable(this);
   $PatientsTable _patients;
   $PatientsTable get patients => _patients ??= $PatientsTable(this);
+  $MedicsTable _medics;
+  $MedicsTable get medics => _medics ??= $MedicsTable(this);
+  $DosesTable _doses;
+  $DosesTable get doses => _doses ??= $DosesTable(this);
   PasswordDao _passwordDao;
   PasswordDao get passwordDao =>
       _passwordDao ??= PasswordDao(this as AppDatabase);
   PatientDao _patientDao;
   PatientDao get patientDao => _patientDao ??= PatientDao(this as AppDatabase);
+  MedicDao _medicDao;
+  MedicDao get medicDao => _medicDao ??= MedicDao(this as AppDatabase);
+  DoseDao _doseDao;
+  DoseDao get doseDao => _doseDao ??= DoseDao(this as AppDatabase);
   @override
   Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [passwords, patients];
+  List<DatabaseSchemaEntity> get allSchemaEntities =>
+      [passwords, patients, medics, doses];
 }
 
 // **************************************************************************
@@ -602,4 +1527,12 @@ mixin _$PasswordDaoMixin on DatabaseAccessor<AppDatabase> {
 }
 mixin _$PatientDaoMixin on DatabaseAccessor<AppDatabase> {
   $PatientsTable get patients => attachedDatabase.patients;
+}
+mixin _$MedicDaoMixin on DatabaseAccessor<AppDatabase> {
+  $MedicsTable get medics => attachedDatabase.medics;
+}
+mixin _$DoseDaoMixin on DatabaseAccessor<AppDatabase> {
+  $DosesTable get doses => attachedDatabase.doses;
+  $PatientsTable get patients => attachedDatabase.patients;
+  $MedicsTable get medics => attachedDatabase.medics;
 }

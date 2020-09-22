@@ -34,7 +34,7 @@ class _HomeState extends State<Home> {
     category3.icon = t5_coupon;
     list.add(category3);
     var category4 = Category();
-    category4.name = "Pay Bill";
+    category4.name = "Calcul Dose";
     category4.color = t5Cat4;
     category4.icon = t5_invoice;
     list.add(category4);

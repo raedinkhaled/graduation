@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:graduation/Screens/calculDose.dart';
 import 'package:graduation/Screens/colors.dart';
 import 'package:graduation/Screens/constants.dart';
 import 'package:graduation/Screens/widget.dart';
@@ -21,7 +22,16 @@ class GridListDashboard extends StatelessWidget {
         gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 16, mainAxisSpacing: 16),
         itemBuilder: (BuildContext context, int index) {
           return GestureDetector(
-            onTap: () {},
+            onTap: () {
+              if(index == 3){
+                Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => CalculDose(),
+                ),
+              );
+              }
+            },
             child: Container(
               alignment: Alignment.center,
               decoration: boxDecoration(radius: 10, showShadow: true, bgColor: t5White),

@@ -38,9 +38,8 @@ class T5BottomBarState extends State<T5BottomBar> {
       items: <BubbleBottomBarItem>[
         tab(t5_img_home, "Accueil"),
         tab(t5_user, "Patients"),
-        tab(t5_list_check, "Listing"),
+        tab(t5_list_check, "Medicaments"),
         tab(t5_notification_2, "Notification"),
-        tab(t5_user, "Profile"),
         tab(t5_user, "Profile"),
       ],
     );

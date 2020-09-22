@@ -1,30 +1,22 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:graduation/Screens/Medics.dart';
-import 'package:graduation/Screens/T5Images.dart';
+import 'package:graduation/Screens/Patients.dart' as pat;
 import 'package:graduation/Screens/colors.dart';
 import 'package:graduation/Screens/constants.dart';
 import 'package:graduation/Screens/dashboard.dart';
-import 'package:graduation/Screens/editPatient.dart';
+import 'package:graduation/Screens/editMedic.dart';
 import 'package:graduation/Screens/extensions.dart';
 import 'package:graduation/Screens/widget.dart';
-import 'package:graduation/Widgets/ListModel.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:graduation/cubit/patient_cubit.dart';
+import 'package:graduation/cubit/medics_cubit.dart';
 import 'package:graduation/data/moor_database.dart';
-import 'package:moor_flutter/moor_flutter.dart' as moor;
 
-class Patients extends StatefulWidget {
+class Medicaments extends StatefulWidget {
   @override
-  _PatientsState createState() => _PatientsState();
-
-  final Patient mypatient;
-  Patients({this.mypatient});
+  _MedicamentsState createState() => _MedicamentsState();
 }
 
-class _PatientsState extends State<Patients> {
-  var pages = [Dashboard(), Patients(), Medicaments()];
+class _MedicamentsState extends State<Medicaments> {
+  var pages = [Dashboard(), pat.Patients(), Medicaments()];
 
   final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
 
@@ -35,16 +27,9 @@ class _PatientsState extends State<Patients> {
 
   final _formKey = GlobalKey<FormState>();
 
-  void dispose() {
-    // Clean up the controller when the widget is disposed.
-    super.dispose();
-  }
-
-  List<Category> mFavouriteList;
-
   @override
   Widget build(BuildContext context) {
-    final patientCubit = context.bloc<PatientCubit>();
+    final medicCubit = context.bloc<MedicsCubit>();
     changeStatusColor(t5DarkNavy);
     var width = MediaQuery.of(context).size.width;
     width = width - 50;
@@ -59,7 +44,7 @@ class _PatientsState extends State<Patients> {
               Row(
                 children: <Widget>[
                   SizedBox(width: 16),
-                  text("Les Patients",
+                  text("Les Medicaments",
                       textColor: t5White,
                       fontSize: textSizeNormal,
                       fontFamily: fontMedium)
@@ -90,36 +75,36 @@ class _PatientsState extends State<Patients> {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(24.0),
-                    child: BlocBuilder<PatientCubit, PatientState>(
+                    child: BlocBuilder<MedicsCubit, MedicsState>(
                       builder: (context, state) {
-                        if (state is PatientInitial) {
+                        if (state is MedicsInitial) {
                           return StreamBuilder(
-                            stream: patientCubit.patientDao.watchAllPatients(),
-                            builder: (context,
-                                AsyncSnapshot<List<Patient>> snapshot) {
-                              final patients = snapshot.data ?? List();
+                            stream: medicCubit.medicDao.watchAllMedics(),
+                            builder:
+                                (context, AsyncSnapshot<List<Medic>> snapshot) {
+                              final medics = snapshot.data ?? List();
                               return ListView.builder(
-                                itemCount: patients.length,
+                                itemCount: medics.length,
                                 itemBuilder: (_, index) {
-                                  final itemPatient = patients[index];
-                                  return buildPatient(context, itemPatient,
-                                      patientCubit.patientDao, patients.length);
+                                  final itemMedic = medics[index];
+                                  return buildMedic(context, itemMedic,
+                                      medicCubit.medicDao, medics.length);
                                 },
                               );
                             },
                           );
                         }
                         return StreamBuilder(
-                          stream: patientCubit.patientDao.watchAllPatients(),
+                          stream: medicCubit.medicDao.watchAllMedics(),
                           builder:
-                              (context, AsyncSnapshot<List<Patient>> snapshot) {
-                            final patients = snapshot.data ?? List();
+                              (context, AsyncSnapshot<List<Medic>> snapshot) {
+                            final medics = snapshot.data ?? List();
                             return ListView.builder(
-                              itemCount: patients.length,
+                              itemCount: medics.length,
                               itemBuilder: (_, index) {
-                                final itemPatient = patients[index];
-                                return buildPatient(context, itemPatient,
-                                    patientCubit.patientDao, patients.length);
+                                final itemMedic = medics[index];
+                                return buildMedic(context, itemMedic,
+                                    medicCubit.medicDao, medics.length);
                               },
                             );
                           },
@@ -137,8 +122,8 @@ class _PatientsState extends State<Patients> {
   }
 }
 
-Widget buildPatient(BuildContext context, Patient itemPatient,
-    PatientDao patientDao, int value) {
+Widget buildMedic(
+    BuildContext context, Medic itemMedic, MedicDao medicDao, int value) {
   return Padding(
     padding: EdgeInsets.symmetric(horizontal: 5),
     child: Column(
@@ -152,16 +137,25 @@ Widget buildPatient(BuildContext context, Patient itemPatient,
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => EditPatientScreen(patient: itemPatient),
+                  builder: (_) => EditMedicScreen(medic: itemMedic),
                 ),
               ),
               title: Text(
-                '${itemPatient.nom} ${itemPatient.prenom}',
+                '${itemMedic.medicNom.toUpperCase()}',
                 style: TextStyle(
                     fontWeight: FontWeight.w500, fontSize: textSizeMedium),
               ),
-              subtitle: Text(
-                  '${itemPatient.taille.toStringAsFixed(2)} cm • ${itemPatient.poids.toStringAsFixed(2)} kg'),
+              subtitle: Text('${itemMedic.medicLab}'),
+              trailing: Column(
+                children: <Widget>[
+                  text("Reliquats", fontSize: textSizeMedium, textColor: t5TextColorSecondary),
+                  Container(
+                    padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                    decoration: boxDecoration(bgColor: t5DarkRed, radius: 16),
+                    child: text("0.25 ml", fontSize: textSizeMedium, textColor: t5White),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

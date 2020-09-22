@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:graduation/Screens/Medics.dart';
 import 'package:graduation/Screens/Patients.dart';
 import 'package:graduation/Screens/T5Images.dart';
 import 'package:graduation/Screens/colors.dart';
 import 'package:graduation/Screens/constants.dart';
+import 'package:graduation/Screens/editMedic.dart';
 import 'package:graduation/Screens/extensions.dart';
 import 'package:graduation/Screens/home.dart';
 import 'package:graduation/Widgets/BottomBar.dart';
@@ -11,6 +13,8 @@ import 'package:graduation/Widgets/GridListDashboard.dart';
 import 'package:graduation/Widgets/ListModel.dart';
 import 'package:graduation/cubit/patient_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'editPatient.dart';
 
 
 class Dashboard extends StatefulWidget {
@@ -24,6 +28,7 @@ class _DashboardState extends State<Dashboard> {
   var pages = [
     Home(),
     Patients(),
+    Medicaments(),
   ];
 
   void _onItemTapped(int index) {
@@ -44,6 +49,33 @@ class _DashboardState extends State<Dashboard> {
 
   }
 
+  Widget getFAB(){
+    if(selectedIndex == 1) {
+       return FloatingActionButton(
+              onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => EditPatientScreen(),
+              ),
+            ),
+              child: Icon(Icons.add),
+              backgroundColor: t5DarkNavy,
+            );
+      }else if(selectedIndex == 2){
+        return FloatingActionButton(
+              onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => EditMedicScreen(),
+              ),
+            ),
+              child: Icon(Icons.add),
+              backgroundColor: t5DarkNavy,
+            );
+      }
+
+      return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,13 +85,7 @@ class _DashboardState extends State<Dashboard> {
     final GlobalKey<ScaffoldState> _scaffoldKey =
         new GlobalKey<ScaffoldState>();
     return Scaffold(
-      floatingActionButton: selectedIndex == 1
-          ? FloatingActionButton(
-              onPressed: () => changeMyState(context),
-              child: Icon(Icons.add),
-              backgroundColor: t5DarkNavy,
-            )
-          : null,
+      floatingActionButton: getFAB() ,
       backgroundColor: t5DarkNavy,
       key: _scaffoldKey,
       body: SafeArea(child: pages[selectedIndex]),
@@ -82,10 +108,7 @@ class _DashboardState extends State<Dashboard> {
         items: <BubbleBottomBarItem>[
           tab(t5_img_home, "Accueil"),
           tab(t5_user, "Patients"),
-          tab(t5_list_check, "Listing"),
-          tab(t5_notification_2, "Notification"),
-          tab(t5_user, "Profile"),
-          tab(t5_user, "Profile"),
+          tab(t5_list_check, "Medicaments"),
         ],
       ),
     );
