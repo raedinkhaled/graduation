@@ -1304,12 +1304,13 @@ class DosesCompanion extends UpdateCompanion<Dose> {
     this.date = const Value.absent(),
   });
   DosesCompanion.insert({
-    this.doseID = const Value.absent(),
+    @required int doseID,
     @required int patientid,
     @required int medicid,
     @required int posolgie,
     @required DateTime date,
-  })  : patientid = Value(patientid),
+  })  : doseID = Value(doseID),
+        patientid = Value(patientid),
         medicid = Value(medicid),
         posolgie = Value(posolgie),
         date = Value(date);
@@ -1450,6 +1451,8 @@ class $DosesTable extends Doses with TableInfo<$DosesTable, Dose> {
     if (data.containsKey('dose_i_d')) {
       context.handle(_doseIDMeta,
           doseID.isAcceptableOrUnknown(data['dose_i_d'], _doseIDMeta));
+    } else if (isInserting) {
+      context.missing(_doseIDMeta);
     }
     if (data.containsKey('patientid')) {
       context.handle(_patientidMeta,
@@ -1479,7 +1482,7 @@ class $DosesTable extends Doses with TableInfo<$DosesTable, Dose> {
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {doseID};
+  Set<GeneratedColumn> get $primaryKey => {doseID, patientid, medicid};
   @override
   Dose map(Map<String, dynamic> data, {String tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;

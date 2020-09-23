@@ -37,6 +37,8 @@ class Doses extends Table {
       integer().customConstraint('REFERENCES medics(medicID)')();
   IntColumn get posolgie => integer()();
   DateTimeColumn get date => dateTime()();
+  @override
+  Set<Column> get primaryKey => {doseID,patientid, medicid};
 }
 
 @UseMoor(
@@ -45,7 +47,7 @@ class Doses extends Table {
 class AppDatabase extends _$AppDatabase {
   AppDatabase()
       : super(FlutterQueryExecutor.inDatabaseFolder(
-            path: 'newdb.sqlite', logStatements: true));
+            path: 'newdbsss.sqlite', logStatements: true));
 
   @override
   int get schemaVersion => 3;

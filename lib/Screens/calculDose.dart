@@ -41,7 +41,7 @@ class _CalculDoseState extends State<CalculDose> {
     
 
     print(
-        '${selectedPatient.patientID}, ${selectedPatient.nom}, ${selectedMedic.medicID}, $posologie');
+        '${selectedPatient.patientID}, ${selectedPatient.nom}, ${selectedMedic.medicID}, $posologie, $doseCreated');
   }
 
   @override
@@ -103,7 +103,7 @@ class _CalculDoseState extends State<CalculDose> {
                                         left: 20, right: 20),
                                     child: Column(
                                       mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                          MainAxisAlignment.start,
                                       crossAxisAlignment: CrossAxisAlignment.center,
                                       children: <Widget>[
                                         text(
@@ -111,6 +111,26 @@ class _CalculDoseState extends State<CalculDose> {
                                             textColor: t5DarkNavy,
                                             fontSize: textSizeSMedium,
                                             fontFamily: fontMedium),
+                                        text(
+                                            'Le Volume Final est: $volumeFinal ml',
+                                            textColor: t5DarkNavy,
+                                            fontSize: textSizeSMedium,
+                                            fontFamily: fontMedium),
+                                        text(
+                                            'Vous Avez Besoin de: $nbrFlacons flacons de ${selectedMedic.medicNom}',
+                                            textColor: t5DarkNavy,
+                                            fontSize: textSizeSMedium,
+                                            fontFamily: fontMedium),
+                                        text(
+                                            'Le reliquat de cette preparation est: $reliquat',
+                                            textColor: t5DarkNavy,
+                                            fontSize: textSizeSMedium,
+                                            fontFamily: fontMedium),
+                                      text(
+                                            'La poche utilise doit etre entre: $minPoche et $maxPoche',
+                                            textColor: t5DarkNavy,
+                                            fontSize: textSizeSMedium,
+                                            fontFamily: fontMedium)
                                       ],
                                     ),
                                   ),
