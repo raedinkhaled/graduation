@@ -5,6 +5,7 @@ import 'package:graduation/Screens/widget.dart';
 import 'package:graduation/cubit/doses_cubit.dart';
 import 'package:graduation/cubit/medics_cubit.dart';
 import 'package:graduation/cubit/patient_cubit.dart';
+import 'package:graduation/cubit/reliquats_cubit.dart';
 import 'package:graduation/data/moor_database.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:moor_flutter/moor_flutter.dart' as moor;
@@ -21,11 +22,12 @@ class _CalculDoseState extends State<CalculDose> {
   int posologie = 0;
   Patient selectedPatient;
   Medic selectedMedic;
+  Reliquat selectedReliquat;
+  double reliquat;
   DateTime doseCreated;
-  
-
   _submit(BuildContext context) {
     final doseCubit = context.bloc<DosesCubit>();
+    final reliquatCubit = context.bloc<ReliquatsCubit>();
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
       doseCreated = DateTime.now();
@@ -33,12 +35,20 @@ class _CalculDoseState extends State<CalculDose> {
           medicid: moor.Value(selectedMedic.medicID),
           patientid: moor.Value(selectedPatient.patientID),
           posolgie: moor.Value(posologie),
-          date: moor.Value(doseCreated)
-          );
+          date: moor.Value(doseCreated));
       doseCubit.doseDao.insertDose(doseT);
-    }
 
-    
+      final reliquatT = ReliquatsCompanion(
+        medicid: moor.Value(selectedMedic.medicID),
+        date: moor.Value(
+            doseCreated.add(Duration(hours: selectedMedic.stabilite.toInt()))),
+        quantite: moor.Value(reliquat),
+      );
+
+      if (reliquat > 0) {
+        reliquatCubit.reliquatDao.insertReliquat(reliquatT);
+      }
+    }
 
     print(
         '${selectedPatient.patientID}, ${selectedPatient.nom}, ${selectedMedic.medicID}, $posologie, $doseCreated');
@@ -49,6 +59,7 @@ class _CalculDoseState extends State<CalculDose> {
     final patientCubit = context.bloc<PatientCubit>();
     final medicCubit = context.bloc<MedicsCubit>();
     final doseCubit = context.bloc<DosesCubit>();
+    final reliquatCubit = context.bloc<ReliquatsCubit>();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: t5DarkNavy,
@@ -65,22 +76,31 @@ class _CalculDoseState extends State<CalculDose> {
             if (state is ModalBottom) {
               double doseAdministrer = selectedPatient.surface * posologie;
               double volumeFinal = doseAdministrer / selectedMedic.cI;
-              int nbrFlacons = volumeFinal ~/ selectedMedic.presentation;
-              double reliquat = (nbrFlacons* selectedMedic.presentation) - volumeFinal;
+              int numFlacon() {
+                int nbrflacons = 0;
+                while (nbrflacons * selectedMedic.presentation < volumeFinal) {
+                  nbrflacons++;
+                }
+
+                return nbrflacons;
+              }
+
+              int nbrFlacons = numFlacon();
+              reliquat =
+                  (nbrFlacons * selectedMedic.presentation) - volumeFinal;
               double minPoche = doseAdministrer / selectedMedic.cMax;
-              double maxPoche = doseAdministrer / selectedMedic.cMin;  
+              double maxPoche = doseAdministrer / selectedMedic.cMin;
 
               showModalBottomSheet(
                   backgroundColor: Colors.transparent,
                   context: context,
                   isScrollControlled: true,
-                  builder: (BuildContext context) {
+                  builder: (context) {
                     return DraggableScrollableSheet(
                         initialChildSize: 0.65,
                         maxChildSize: 1,
                         minChildSize: 0.5,
-                        builder: (BuildContext context,
-                            ScrollController scrollController) {
+                        builder: (context, scrollController) {
                           return Container(
                             padding: EdgeInsets.only(top: 24),
                             alignment: Alignment.topLeft,
@@ -101,37 +121,178 @@ class _CalculDoseState extends State<CalculDose> {
                                   child: Padding(
                                     padding: const EdgeInsets.only(
                                         left: 20, right: 20),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: <Widget>[
-                                        text(
-                                            'La dose a administrer est: $doseAdministrer mg',
-                                            textColor: t5DarkNavy,
-                                            fontSize: textSizeSMedium,
-                                            fontFamily: fontMedium),
-                                        text(
-                                            'Le Volume Final est: $volumeFinal ml',
-                                            textColor: t5DarkNavy,
-                                            fontSize: textSizeSMedium,
-                                            fontFamily: fontMedium),
-                                        text(
-                                            'Vous Avez Besoin de: $nbrFlacons flacons de ${selectedMedic.medicNom}',
-                                            textColor: t5DarkNavy,
-                                            fontSize: textSizeSMedium,
-                                            fontFamily: fontMedium),
-                                        text(
-                                            'Le reliquat de cette preparation est: $reliquat',
-                                            textColor: t5DarkNavy,
-                                            fontSize: textSizeSMedium,
-                                            fontFamily: fontMedium),
-                                      text(
-                                            'La poche utilise doit etre entre: $minPoche et $maxPoche',
-                                            textColor: t5DarkNavy,
-                                            fontSize: textSizeSMedium,
-                                            fontFamily: fontMedium)
-                                      ],
+                                    child: SingleChildScrollView(
+                                      controller: scrollController,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Container(
+                                            margin: EdgeInsets.only(
+                                                left: 16, top: 16, right: 16),
+                                            decoration: boxDecoration(
+                                                radius: 16,
+                                                showShadow: true,
+                                                bgColor: t6white),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(16.0),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: <Widget>[
+                                                  text('La dose a administrer:',
+                                                      textColor:
+                                                          t6textColorPrimary,
+                                                      fontFamily: fontMedium),
+                                                  text(
+                                                    ' ${doseAdministrer.toStringAsFixed(doseAdministrer.truncateToDouble() == doseAdministrer ? 0 : 3)} mg',
+                                                    textColor: t5DarkRed,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          Container(
+                                            margin: EdgeInsets.only(
+                                                left: 16, top: 16, right: 16),
+                                            decoration: boxDecoration(
+                                                radius: 16,
+                                                showShadow: true,
+                                                bgColor: t6white),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(16.0),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: <Widget>[
+                                                  text('Le Volume Final:',
+                                                      textColor:
+                                                          t6textColorPrimary,
+                                                      fontFamily: fontMedium),
+                                                  text(
+                                                    ' ${volumeFinal.toStringAsFixed(volumeFinal.truncateToDouble() == volumeFinal ? 0 : 3)} ml',
+                                                    textColor: t5DarkRed,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          Container(
+                                            margin: EdgeInsets.only(
+                                                left: 16, top: 16, right: 16),
+                                            decoration: boxDecoration(
+                                                radius: 16,
+                                                showShadow: true,
+                                                bgColor: t6white),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(16.0),
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: <Widget>[
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: <Widget>[
+                                                      text(
+                                                          'Nombre de flacons necessaire',
+                                                          textColor:
+                                                              t6textColorPrimary,
+                                                          fontFamily:
+                                                              fontMedium),
+                                                      text('',
+                                                          textColor:
+                                                              t6textColorPrimary,
+                                                          fontFamily:
+                                                              fontMedium),
+                                                    ],
+                                                  ),
+                                                  text(
+                                                    ' ${nbrFlacons.toStringAsFixed(nbrFlacons.truncateToDouble() == nbrFlacons ? 0 : 3)} flacons de ${selectedMedic.medicNom}',
+                                                    textColor: t5DarkRed,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          Container(
+                                            margin: EdgeInsets.only(
+                                                left: 16, top: 16, right: 16),
+                                            decoration: boxDecoration(
+                                                radius: 16,
+                                                showShadow: true,
+                                                bgColor: t6white),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(16.0),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: <Widget>[
+                                                  text('Le Reliquat:',
+                                                      textColor:
+                                                          t6textColorPrimary,
+                                                      fontFamily: fontMedium),
+                                                  text(
+                                                    ' ${reliquat.toStringAsFixed(reliquat.truncateToDouble() == reliquat ? 0 : 3)} ml',
+                                                    textColor: t5DarkRed,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          Container(
+                                            margin: EdgeInsets.only(
+                                                left: 16, top: 16, right: 16),
+                                            decoration: boxDecoration(
+                                                radius: 16,
+                                                showShadow: true,
+                                                bgColor: t6white),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(16.0),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: <Widget>[
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: <Widget>[
+                                                      text('La poche',
+                                                          textColor:
+                                                              t6textColorPrimary,
+                                                          fontFamily:
+                                                              fontMedium),
+                                                      text('',
+                                                          textColor:
+                                                              t6textColorPrimary,
+                                                          fontFamily:
+                                                              fontMedium),
+                                                    ],
+                                                  ),
+                                                  text(
+                                                    ' entre ${minPoche.toStringAsFixed(0)} ml et ${maxPoche.toStringAsFixed(0)} ml',
+                                                    textColor: t5DarkRed,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 )

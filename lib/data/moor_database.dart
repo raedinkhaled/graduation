@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:moor_flutter/moor_flutter.dart';
 
 part 'moor_database.g.dart';
@@ -32,25 +34,32 @@ class Medics extends Table {
 class Doses extends Table {
   IntColumn get doseID => integer().autoIncrement()();
   IntColumn get patientid =>
-      integer().customConstraint('REFERENCES patients(patientID)')();
+      integer().customConstraint("NOT NULL REFERENCES patients(patient_i_d)")();
   IntColumn get medicid =>
-      integer().customConstraint('REFERENCES medics(medicID)')();
+      integer().customConstraint("NOT NULL REFERENCES medics(medic_i_d)")();
   IntColumn get posolgie => integer()();
   DateTimeColumn get date => dateTime()();
-  @override
-  Set<Column> get primaryKey => {doseID,patientid, medicid};
+}
+
+class Reliquats extends Table {
+  IntColumn get reliquatID => integer().autoIncrement()();
+  IntColumn get medicid =>
+      integer().customConstraint('NOT NULL REFERENCES medics(medic_i_d)')();
+  RealColumn get quantite => real()();
+  DateTimeColumn get date => dateTime()();
+  BoolColumn get isvalid => boolean().withDefault(Constant(true))();
 }
 
 @UseMoor(
-    tables: [Passwords, Patients, Medics, Doses],
-    daos: [PasswordDao, PatientDao, MedicDao, DoseDao])
+    tables: [Passwords, Patients, Medics, Doses, Reliquats],
+    daos: [PasswordDao, PatientDao, MedicDao, DoseDao, ReliquatDao])
 class AppDatabase extends _$AppDatabase {
   AppDatabase()
       : super(FlutterQueryExecutor.inDatabaseFolder(
-            path: 'newdbsss.sqlite', logStatements: true));
+            path: 'mssssyds.sqlite', logStatements: true));
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 1;
   @override
   MigrationStrategy get migration => MigrationStrategy(
         // Runs if the database has already been opened on the device with a lower version
@@ -62,8 +71,7 @@ class AppDatabase extends _$AppDatabase {
             await migrator.createTable(passwords);
             await migrator.createTable(patients);
             await migrator.createTable(medics);
-          }
-          else if (from == 2) {
+          } else if (from == 2) {
             await migrator.createTable(doses);
           }
         },
@@ -150,4 +158,12 @@ class DoseDao extends DatabaseAccessor<AppDatabase> with _$DoseDaoMixin {
           }).toList());
 
   Future insertDose(Insertable<Dose> dose) => into(doses).insert(dose);
+}
+
+@UseDao(tables: [Reliquats, Medics])
+class ReliquatDao extends DatabaseAccessor<AppDatabase> with _$ReliquatDaoMixin{
+  final AppDatabase db;
+  ReliquatDao(this.db) : super(db);
+
+  Future insertReliquat(Insertable<Reliquat> reliquat) => into(reliquats).insert(reliquat);
 }

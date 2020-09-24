@@ -1304,13 +1304,12 @@ class DosesCompanion extends UpdateCompanion<Dose> {
     this.date = const Value.absent(),
   });
   DosesCompanion.insert({
-    @required int doseID,
+    this.doseID = const Value.absent(),
     @required int patientid,
     @required int medicid,
     @required int posolgie,
     @required DateTime date,
-  })  : doseID = Value(doseID),
-        patientid = Value(patientid),
+  })  : patientid = Value(patientid),
         medicid = Value(medicid),
         posolgie = Value(posolgie),
         date = Value(date);
@@ -1398,7 +1397,7 @@ class $DosesTable extends Doses with TableInfo<$DosesTable, Dose> {
   GeneratedIntColumn get patientid => _patientid ??= _constructPatientid();
   GeneratedIntColumn _constructPatientid() {
     return GeneratedIntColumn('patientid', $tableName, false,
-        $customConstraints: 'REFERENCES patients(patientID)');
+        $customConstraints: 'NOT NULL REFERENCES patients(patient_i_d)');
   }
 
   final VerificationMeta _medicidMeta = const VerificationMeta('medicid');
@@ -1407,7 +1406,7 @@ class $DosesTable extends Doses with TableInfo<$DosesTable, Dose> {
   GeneratedIntColumn get medicid => _medicid ??= _constructMedicid();
   GeneratedIntColumn _constructMedicid() {
     return GeneratedIntColumn('medicid', $tableName, false,
-        $customConstraints: 'REFERENCES medics(medicID)');
+        $customConstraints: 'NOT NULL REFERENCES medics(medic_i_d)');
   }
 
   final VerificationMeta _posolgieMeta = const VerificationMeta('posolgie');
@@ -1451,8 +1450,6 @@ class $DosesTable extends Doses with TableInfo<$DosesTable, Dose> {
     if (data.containsKey('dose_i_d')) {
       context.handle(_doseIDMeta,
           doseID.isAcceptableOrUnknown(data['dose_i_d'], _doseIDMeta));
-    } else if (isInserting) {
-      context.missing(_doseIDMeta);
     }
     if (data.containsKey('patientid')) {
       context.handle(_patientidMeta,
@@ -1482,7 +1479,7 @@ class $DosesTable extends Doses with TableInfo<$DosesTable, Dose> {
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {doseID, patientid, medicid};
+  Set<GeneratedColumn> get $primaryKey => {doseID};
   @override
   Dose map(Map<String, dynamic> data, {String tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
@@ -1492,6 +1489,343 @@ class $DosesTable extends Doses with TableInfo<$DosesTable, Dose> {
   @override
   $DosesTable createAlias(String alias) {
     return $DosesTable(_db, alias);
+  }
+}
+
+class Reliquat extends DataClass implements Insertable<Reliquat> {
+  final int reliquatID;
+  final int medicid;
+  final double quantite;
+  final DateTime date;
+  final bool isvalid;
+  Reliquat(
+      {@required this.reliquatID,
+      @required this.medicid,
+      @required this.quantite,
+      @required this.date,
+      @required this.isvalid});
+  factory Reliquat.fromData(Map<String, dynamic> data, GeneratedDatabase db,
+      {String prefix}) {
+    final effectivePrefix = prefix ?? '';
+    final intType = db.typeSystem.forDartType<int>();
+    final doubleType = db.typeSystem.forDartType<double>();
+    final dateTimeType = db.typeSystem.forDartType<DateTime>();
+    final boolType = db.typeSystem.forDartType<bool>();
+    return Reliquat(
+      reliquatID: intType
+          .mapFromDatabaseResponse(data['${effectivePrefix}reliquat_i_d']),
+      medicid:
+          intType.mapFromDatabaseResponse(data['${effectivePrefix}medicid']),
+      quantite: doubleType
+          .mapFromDatabaseResponse(data['${effectivePrefix}quantite']),
+      date:
+          dateTimeType.mapFromDatabaseResponse(data['${effectivePrefix}date']),
+      isvalid:
+          boolType.mapFromDatabaseResponse(data['${effectivePrefix}isvalid']),
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (!nullToAbsent || reliquatID != null) {
+      map['reliquat_i_d'] = Variable<int>(reliquatID);
+    }
+    if (!nullToAbsent || medicid != null) {
+      map['medicid'] = Variable<int>(medicid);
+    }
+    if (!nullToAbsent || quantite != null) {
+      map['quantite'] = Variable<double>(quantite);
+    }
+    if (!nullToAbsent || date != null) {
+      map['date'] = Variable<DateTime>(date);
+    }
+    if (!nullToAbsent || isvalid != null) {
+      map['isvalid'] = Variable<bool>(isvalid);
+    }
+    return map;
+  }
+
+  ReliquatsCompanion toCompanion(bool nullToAbsent) {
+    return ReliquatsCompanion(
+      reliquatID: reliquatID == null && nullToAbsent
+          ? const Value.absent()
+          : Value(reliquatID),
+      medicid: medicid == null && nullToAbsent
+          ? const Value.absent()
+          : Value(medicid),
+      quantite: quantite == null && nullToAbsent
+          ? const Value.absent()
+          : Value(quantite),
+      date: date == null && nullToAbsent ? const Value.absent() : Value(date),
+      isvalid: isvalid == null && nullToAbsent
+          ? const Value.absent()
+          : Value(isvalid),
+    );
+  }
+
+  factory Reliquat.fromJson(Map<String, dynamic> json,
+      {ValueSerializer serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return Reliquat(
+      reliquatID: serializer.fromJson<int>(json['reliquatID']),
+      medicid: serializer.fromJson<int>(json['medicid']),
+      quantite: serializer.fromJson<double>(json['quantite']),
+      date: serializer.fromJson<DateTime>(json['date']),
+      isvalid: serializer.fromJson<bool>(json['isvalid']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'reliquatID': serializer.toJson<int>(reliquatID),
+      'medicid': serializer.toJson<int>(medicid),
+      'quantite': serializer.toJson<double>(quantite),
+      'date': serializer.toJson<DateTime>(date),
+      'isvalid': serializer.toJson<bool>(isvalid),
+    };
+  }
+
+  Reliquat copyWith(
+          {int reliquatID,
+          int medicid,
+          double quantite,
+          DateTime date,
+          bool isvalid}) =>
+      Reliquat(
+        reliquatID: reliquatID ?? this.reliquatID,
+        medicid: medicid ?? this.medicid,
+        quantite: quantite ?? this.quantite,
+        date: date ?? this.date,
+        isvalid: isvalid ?? this.isvalid,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('Reliquat(')
+          ..write('reliquatID: $reliquatID, ')
+          ..write('medicid: $medicid, ')
+          ..write('quantite: $quantite, ')
+          ..write('date: $date, ')
+          ..write('isvalid: $isvalid')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => $mrjf($mrjc(
+      reliquatID.hashCode,
+      $mrjc(medicid.hashCode,
+          $mrjc(quantite.hashCode, $mrjc(date.hashCode, isvalid.hashCode)))));
+  @override
+  bool operator ==(dynamic other) =>
+      identical(this, other) ||
+      (other is Reliquat &&
+          other.reliquatID == this.reliquatID &&
+          other.medicid == this.medicid &&
+          other.quantite == this.quantite &&
+          other.date == this.date &&
+          other.isvalid == this.isvalid);
+}
+
+class ReliquatsCompanion extends UpdateCompanion<Reliquat> {
+  final Value<int> reliquatID;
+  final Value<int> medicid;
+  final Value<double> quantite;
+  final Value<DateTime> date;
+  final Value<bool> isvalid;
+  const ReliquatsCompanion({
+    this.reliquatID = const Value.absent(),
+    this.medicid = const Value.absent(),
+    this.quantite = const Value.absent(),
+    this.date = const Value.absent(),
+    this.isvalid = const Value.absent(),
+  });
+  ReliquatsCompanion.insert({
+    this.reliquatID = const Value.absent(),
+    @required int medicid,
+    @required double quantite,
+    @required DateTime date,
+    this.isvalid = const Value.absent(),
+  })  : medicid = Value(medicid),
+        quantite = Value(quantite),
+        date = Value(date);
+  static Insertable<Reliquat> custom({
+    Expression<int> reliquatID,
+    Expression<int> medicid,
+    Expression<double> quantite,
+    Expression<DateTime> date,
+    Expression<bool> isvalid,
+  }) {
+    return RawValuesInsertable({
+      if (reliquatID != null) 'reliquat_i_d': reliquatID,
+      if (medicid != null) 'medicid': medicid,
+      if (quantite != null) 'quantite': quantite,
+      if (date != null) 'date': date,
+      if (isvalid != null) 'isvalid': isvalid,
+    });
+  }
+
+  ReliquatsCompanion copyWith(
+      {Value<int> reliquatID,
+      Value<int> medicid,
+      Value<double> quantite,
+      Value<DateTime> date,
+      Value<bool> isvalid}) {
+    return ReliquatsCompanion(
+      reliquatID: reliquatID ?? this.reliquatID,
+      medicid: medicid ?? this.medicid,
+      quantite: quantite ?? this.quantite,
+      date: date ?? this.date,
+      isvalid: isvalid ?? this.isvalid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (reliquatID.present) {
+      map['reliquat_i_d'] = Variable<int>(reliquatID.value);
+    }
+    if (medicid.present) {
+      map['medicid'] = Variable<int>(medicid.value);
+    }
+    if (quantite.present) {
+      map['quantite'] = Variable<double>(quantite.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<DateTime>(date.value);
+    }
+    if (isvalid.present) {
+      map['isvalid'] = Variable<bool>(isvalid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ReliquatsCompanion(')
+          ..write('reliquatID: $reliquatID, ')
+          ..write('medicid: $medicid, ')
+          ..write('quantite: $quantite, ')
+          ..write('date: $date, ')
+          ..write('isvalid: $isvalid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ReliquatsTable extends Reliquats
+    with TableInfo<$ReliquatsTable, Reliquat> {
+  final GeneratedDatabase _db;
+  final String _alias;
+  $ReliquatsTable(this._db, [this._alias]);
+  final VerificationMeta _reliquatIDMeta = const VerificationMeta('reliquatID');
+  GeneratedIntColumn _reliquatID;
+  @override
+  GeneratedIntColumn get reliquatID => _reliquatID ??= _constructReliquatID();
+  GeneratedIntColumn _constructReliquatID() {
+    return GeneratedIntColumn('reliquat_i_d', $tableName, false,
+        hasAutoIncrement: true, declaredAsPrimaryKey: true);
+  }
+
+  final VerificationMeta _medicidMeta = const VerificationMeta('medicid');
+  GeneratedIntColumn _medicid;
+  @override
+  GeneratedIntColumn get medicid => _medicid ??= _constructMedicid();
+  GeneratedIntColumn _constructMedicid() {
+    return GeneratedIntColumn('medicid', $tableName, false,
+        $customConstraints: 'NOT NULL REFERENCES medics(medic_i_d)');
+  }
+
+  final VerificationMeta _quantiteMeta = const VerificationMeta('quantite');
+  GeneratedRealColumn _quantite;
+  @override
+  GeneratedRealColumn get quantite => _quantite ??= _constructQuantite();
+  GeneratedRealColumn _constructQuantite() {
+    return GeneratedRealColumn(
+      'quantite',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _dateMeta = const VerificationMeta('date');
+  GeneratedDateTimeColumn _date;
+  @override
+  GeneratedDateTimeColumn get date => _date ??= _constructDate();
+  GeneratedDateTimeColumn _constructDate() {
+    return GeneratedDateTimeColumn(
+      'date',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _isvalidMeta = const VerificationMeta('isvalid');
+  GeneratedBoolColumn _isvalid;
+  @override
+  GeneratedBoolColumn get isvalid => _isvalid ??= _constructIsvalid();
+  GeneratedBoolColumn _constructIsvalid() {
+    return GeneratedBoolColumn('isvalid', $tableName, false,
+        defaultValue: Constant(true));
+  }
+
+  @override
+  List<GeneratedColumn> get $columns =>
+      [reliquatID, medicid, quantite, date, isvalid];
+  @override
+  $ReliquatsTable get asDslTable => this;
+  @override
+  String get $tableName => _alias ?? 'reliquats';
+  @override
+  final String actualTableName = 'reliquats';
+  @override
+  VerificationContext validateIntegrity(Insertable<Reliquat> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('reliquat_i_d')) {
+      context.handle(
+          _reliquatIDMeta,
+          reliquatID.isAcceptableOrUnknown(
+              data['reliquat_i_d'], _reliquatIDMeta));
+    }
+    if (data.containsKey('medicid')) {
+      context.handle(_medicidMeta,
+          medicid.isAcceptableOrUnknown(data['medicid'], _medicidMeta));
+    } else if (isInserting) {
+      context.missing(_medicidMeta);
+    }
+    if (data.containsKey('quantite')) {
+      context.handle(_quantiteMeta,
+          quantite.isAcceptableOrUnknown(data['quantite'], _quantiteMeta));
+    } else if (isInserting) {
+      context.missing(_quantiteMeta);
+    }
+    if (data.containsKey('date')) {
+      context.handle(
+          _dateMeta, date.isAcceptableOrUnknown(data['date'], _dateMeta));
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (data.containsKey('isvalid')) {
+      context.handle(_isvalidMeta,
+          isvalid.isAcceptableOrUnknown(data['isvalid'], _isvalidMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {reliquatID};
+  @override
+  Reliquat map(Map<String, dynamic> data, {String tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
+    return Reliquat.fromData(data, _db, prefix: effectivePrefix);
+  }
+
+  @override
+  $ReliquatsTable createAlias(String alias) {
+    return $ReliquatsTable(_db, alias);
   }
 }
 
@@ -1505,6 +1839,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   $MedicsTable get medics => _medics ??= $MedicsTable(this);
   $DosesTable _doses;
   $DosesTable get doses => _doses ??= $DosesTable(this);
+  $ReliquatsTable _reliquats;
+  $ReliquatsTable get reliquats => _reliquats ??= $ReliquatsTable(this);
   PasswordDao _passwordDao;
   PasswordDao get passwordDao =>
       _passwordDao ??= PasswordDao(this as AppDatabase);
@@ -1514,11 +1850,14 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   MedicDao get medicDao => _medicDao ??= MedicDao(this as AppDatabase);
   DoseDao _doseDao;
   DoseDao get doseDao => _doseDao ??= DoseDao(this as AppDatabase);
+  ReliquatDao _reliquatDao;
+  ReliquatDao get reliquatDao =>
+      _reliquatDao ??= ReliquatDao(this as AppDatabase);
   @override
   Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [passwords, patients, medics, doses];
+      [passwords, patients, medics, doses, reliquats];
 }
 
 // **************************************************************************
@@ -1537,5 +1876,9 @@ mixin _$MedicDaoMixin on DatabaseAccessor<AppDatabase> {
 mixin _$DoseDaoMixin on DatabaseAccessor<AppDatabase> {
   $DosesTable get doses => attachedDatabase.doses;
   $PatientsTable get patients => attachedDatabase.patients;
+  $MedicsTable get medics => attachedDatabase.medics;
+}
+mixin _$ReliquatDaoMixin on DatabaseAccessor<AppDatabase> {
+  $ReliquatsTable get reliquats => attachedDatabase.reliquats;
   $MedicsTable get medics => attachedDatabase.medics;
 }

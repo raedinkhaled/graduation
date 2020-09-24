@@ -19,6 +19,7 @@ const t5Cat4 = Color(0XFFf4b428);
 const t5Cat5 = Color(0XFF22ce9a);
 const t5Cat6 = Color(0XFF203afb);
 const t5ShadowColor = Color(0X95E9EBF0);
+const t6textColorPrimary = Color(0XFF464545);
 const t5DarkRed = Color(0XFFF06263);
 const t5ColorPrimaryLight = Color(0X505104D7);
 const t6white = Color(0XFFffffff);
