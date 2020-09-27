@@ -10,7 +10,5 @@ class DosesCubit extends Cubit<DosesState> {
   DosesCubit(this.doseDao) : super(DosesInitial());
 
 
-  moveStateToBottom(){
-    emit(ModalBottom());
-  }
+  
 }

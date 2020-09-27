@@ -24,7 +24,15 @@ class _CalculDoseState extends State<CalculDose> {
   Medic selectedMedic;
   Reliquat selectedReliquat;
   double reliquat;
+  double doseAdministrer;
+  double volumeFinal;
+  double volumeFinalInternal;
+  int nbrFlacons;
+  double minPoche;
+  double maxPoche;
+
   DateTime doseCreated;
+
   _submit(BuildContext context) {
     final doseCubit = context.bloc<DosesCubit>();
     final reliquatCubit = context.bloc<ReliquatsCubit>();
@@ -37,17 +45,33 @@ class _CalculDoseState extends State<CalculDose> {
           posolgie: moor.Value(posologie),
           date: moor.Value(doseCreated));
       doseCubit.doseDao.insertDose(doseT);
+    }
 
+    doseAdministrer = selectedPatient.surface * posologie;
+    volumeFinal = doseAdministrer / selectedMedic.cI;
+    volumeFinalInternal = volumeFinal;
+    int numFlacon() {
+      int nbrflacons = 0;
+      while (nbrflacons * selectedMedic.presentation < volumeFinal) {
+        nbrflacons++;
+      }
+
+      return nbrflacons;
+    }
+
+    nbrFlacons = numFlacon();
+    reliquat = (nbrFlacons * selectedMedic.presentation) - volumeFinalInternal;
+    minPoche = doseAdministrer / selectedMedic.cMax;
+    maxPoche = doseAdministrer / selectedMedic.cMin;
+
+    if (reliquat > 0) {
       final reliquatT = ReliquatsCompanion(
         medicid: moor.Value(selectedMedic.medicID),
         date: moor.Value(
             doseCreated.add(Duration(hours: selectedMedic.stabilite.toInt()))),
         quantite: moor.Value(reliquat),
       );
-
-      if (reliquat > 0) {
-        reliquatCubit.reliquatDao.insertReliquat(reliquatT);
-      }
+      reliquatCubit.reliquatDao.insertReliquat(reliquatT);
     }
 
     print(
@@ -71,238 +95,7 @@ class _CalculDoseState extends State<CalculDose> {
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: SingleChildScrollView(
-          child:
-              BlocConsumer<DosesCubit, DosesState>(listener: (context, state) {
-            if (state is ModalBottom) {
-              double doseAdministrer = selectedPatient.surface * posologie;
-              double volumeFinal = doseAdministrer / selectedMedic.cI;
-              int numFlacon() {
-                int nbrflacons = 0;
-                while (nbrflacons * selectedMedic.presentation < volumeFinal) {
-                  nbrflacons++;
-                }
-
-                return nbrflacons;
-              }
-
-              int nbrFlacons = numFlacon();
-              reliquat =
-                  (nbrFlacons * selectedMedic.presentation) - volumeFinal;
-              double minPoche = doseAdministrer / selectedMedic.cMax;
-              double maxPoche = doseAdministrer / selectedMedic.cMin;
-
-              showModalBottomSheet(
-                  backgroundColor: Colors.transparent,
-                  context: context,
-                  isScrollControlled: true,
-                  builder: (context) {
-                    return DraggableScrollableSheet(
-                        initialChildSize: 0.65,
-                        maxChildSize: 1,
-                        minChildSize: 0.5,
-                        builder: (context, scrollController) {
-                          return Container(
-                            padding: EdgeInsets.only(top: 24),
-                            alignment: Alignment.topLeft,
-                            decoration: BoxDecoration(
-                                color: t5LayoutBackgroundWhite,
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(24),
-                                    topRight: Radius.circular(24))),
-                            child: Column(
-                              children: <Widget>[
-                                Container(
-                                  color: t5ViewColor,
-                                  width: 50,
-                                  height: 3,
-                                ),
-                                SizedBox(height: 20),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 20, right: 20),
-                                    child: SingleChildScrollView(
-                                      controller: scrollController,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Container(
-                                            margin: EdgeInsets.only(
-                                                left: 16, top: 16, right: 16),
-                                            decoration: boxDecoration(
-                                                radius: 16,
-                                                showShadow: true,
-                                                bgColor: t6white),
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(16.0),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: <Widget>[
-                                                  text('La dose a administrer:',
-                                                      textColor:
-                                                          t6textColorPrimary,
-                                                      fontFamily: fontMedium),
-                                                  text(
-                                                    ' ${doseAdministrer.toStringAsFixed(doseAdministrer.truncateToDouble() == doseAdministrer ? 0 : 3)} mg',
-                                                    textColor: t5DarkRed,
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                          Container(
-                                            margin: EdgeInsets.only(
-                                                left: 16, top: 16, right: 16),
-                                            decoration: boxDecoration(
-                                                radius: 16,
-                                                showShadow: true,
-                                                bgColor: t6white),
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(16.0),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: <Widget>[
-                                                  text('Le Volume Final:',
-                                                      textColor:
-                                                          t6textColorPrimary,
-                                                      fontFamily: fontMedium),
-                                                  text(
-                                                    ' ${volumeFinal.toStringAsFixed(volumeFinal.truncateToDouble() == volumeFinal ? 0 : 3)} ml',
-                                                    textColor: t5DarkRed,
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                          Container(
-                                            margin: EdgeInsets.only(
-                                                left: 16, top: 16, right: 16),
-                                            decoration: boxDecoration(
-                                                radius: 16,
-                                                showShadow: true,
-                                                bgColor: t6white),
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(16.0),
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: <Widget>[
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    children: <Widget>[
-                                                      text(
-                                                          'Nombre de flacons necessaire',
-                                                          textColor:
-                                                              t6textColorPrimary,
-                                                          fontFamily:
-                                                              fontMedium),
-                                                      text('',
-                                                          textColor:
-                                                              t6textColorPrimary,
-                                                          fontFamily:
-                                                              fontMedium),
-                                                    ],
-                                                  ),
-                                                  text(
-                                                    ' ${nbrFlacons.toStringAsFixed(nbrFlacons.truncateToDouble() == nbrFlacons ? 0 : 3)} flacons de ${selectedMedic.medicNom}',
-                                                    textColor: t5DarkRed,
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                          Container(
-                                            margin: EdgeInsets.only(
-                                                left: 16, top: 16, right: 16),
-                                            decoration: boxDecoration(
-                                                radius: 16,
-                                                showShadow: true,
-                                                bgColor: t6white),
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(16.0),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: <Widget>[
-                                                  text('Le Reliquat:',
-                                                      textColor:
-                                                          t6textColorPrimary,
-                                                      fontFamily: fontMedium),
-                                                  text(
-                                                    ' ${reliquat.toStringAsFixed(reliquat.truncateToDouble() == reliquat ? 0 : 3)} ml',
-                                                    textColor: t5DarkRed,
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                          Container(
-                                            margin: EdgeInsets.only(
-                                                left: 16, top: 16, right: 16),
-                                            decoration: boxDecoration(
-                                                radius: 16,
-                                                showShadow: true,
-                                                bgColor: t6white),
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(16.0),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: <Widget>[
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    children: <Widget>[
-                                                      text('La poche',
-                                                          textColor:
-                                                              t6textColorPrimary,
-                                                          fontFamily:
-                                                              fontMedium),
-                                                      text('',
-                                                          textColor:
-                                                              t6textColorPrimary,
-                                                          fontFamily:
-                                                              fontMedium),
-                                                    ],
-                                                  ),
-                                                  text(
-                                                    ' entre ${minPoche.toStringAsFixed(0)} ml et ${maxPoche.toStringAsFixed(0)} ml',
-                                                    textColor: t5DarkRed,
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                          );
-                        });
-                  });
-            }
-          }, builder: (context, state) {
+          child: BlocBuilder<DosesCubit, DosesState>(builder: (context, state) {
             return Container(
               padding: EdgeInsets.symmetric(horizontal: 40.0, vertical: 80.0),
               child: Column(
@@ -466,7 +259,286 @@ class _CalculDoseState extends State<CalculDose> {
                                   color: Colors.white, fontSize: 20.0),
                             ),
                             onPressed: () {
-                              doseCubit.moveStateToBottom();
+                              showModalBottomSheet(
+                                  backgroundColor: Colors.transparent,
+                                  context: context,
+                                  isScrollControlled: true,
+                                  builder: (context) {
+                                    return StatefulBuilder(builder:
+                                        (BuildContext context,
+                                            StateSetter setModalState) {
+                                      return DraggableScrollableSheet(
+                                          initialChildSize: 0.65,
+                                          maxChildSize: 1,
+                                          minChildSize: 0.5,
+                                          builder: (context, scrollController) {
+                                            return Container(
+                                              padding: EdgeInsets.only(top: 24),
+                                              alignment: Alignment.topLeft,
+                                              decoration: BoxDecoration(
+                                                  color:
+                                                      t5LayoutBackgroundWhite,
+                                                  borderRadius:
+                                                      BorderRadius.only(
+                                                          topLeft:
+                                                              Radius.circular(
+                                                                  24),
+                                                          topRight:
+                                                              Radius.circular(
+                                                                  24))),
+                                              child: Column(
+                                                children: <Widget>[
+                                                  Container(
+                                                    color: t5ViewColor,
+                                                    width: 50,
+                                                    height: 3,
+                                                  ),
+                                                  SizedBox(height: 20),
+                                                  Expanded(
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              left: 20,
+                                                              right: 20),
+                                                      child:
+                                                          SingleChildScrollView(
+                                                        controller:
+                                                            scrollController,
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: <Widget>[
+                                                            Container(
+                                                              margin: EdgeInsets
+                                                                  .only(
+                                                                      left: 16,
+                                                                      top: 16,
+                                                                      right:
+                                                                          16),
+                                                              decoration:
+                                                                  boxDecoration(
+                                                                      radius:
+                                                                          16,
+                                                                      showShadow:
+                                                                          true,
+                                                                      bgColor:
+                                                                          t6white),
+                                                              child: Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .all(
+                                                                        16.0),
+                                                                child: Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .spaceBetween,
+                                                                  children: <
+                                                                      Widget>[
+                                                                    text(
+                                                                        'La dose a administrer:',
+                                                                        textColor:
+                                                                            t6textColorPrimary,
+                                                                        fontFamily:
+                                                                            fontMedium),
+                                                                    text(
+                                                                      ' ${doseAdministrer.toStringAsFixed(doseAdministrer.truncateToDouble() == doseAdministrer ? 0 : 3)} mg',
+                                                                      textColor:
+                                                                          t5DarkRed,
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            Container(
+                                                              margin: EdgeInsets
+                                                                  .only(
+                                                                      left: 16,
+                                                                      top: 16,
+                                                                      right:
+                                                                          16),
+                                                              decoration:
+                                                                  boxDecoration(
+                                                                      radius:
+                                                                          16,
+                                                                      showShadow:
+                                                                          true,
+                                                                      bgColor:
+                                                                          t6white),
+                                                              child: Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .all(
+                                                                        16.0),
+                                                                child: Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .spaceBetween,
+                                                                  children: <
+                                                                      Widget>[
+                                                                    text(
+                                                                        'Le Volume Final:',
+                                                                        textColor:
+                                                                            t6textColorPrimary,
+                                                                        fontFamily:
+                                                                            fontMedium),
+                                                                    text(
+                                                                      ' ${volumeFinal.toStringAsFixed(volumeFinal.truncateToDouble() == volumeFinal ? 0 : 3)} ml',
+                                                                      textColor:
+                                                                          t5DarkRed,
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            Container(
+                                                              margin: EdgeInsets
+                                                                  .only(
+                                                                      left: 16,
+                                                                      top: 16,
+                                                                      right:
+                                                                          16),
+                                                              decoration:
+                                                                  boxDecoration(
+                                                                      radius:
+                                                                          16,
+                                                                      showShadow:
+                                                                          true,
+                                                                      bgColor:
+                                                                          t6white),
+                                                              child: Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .all(
+                                                                        16.0),
+                                                                child: Column(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .spaceBetween,
+                                                                  children: <
+                                                                      Widget>[
+                                                                    Row(
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .spaceBetween,
+                                                                      children: <
+                                                                          Widget>[
+                                                                        text(
+                                                                            'Nombre de flacons necessaire',
+                                                                            textColor:
+                                                                                t6textColorPrimary,
+                                                                            fontFamily:
+                                                                                fontMedium),
+                                                                        text('',
+                                                                            textColor:
+                                                                                t6textColorPrimary,
+                                                                            fontFamily:
+                                                                                fontMedium),
+                                                                      ],
+                                                                    ),
+                                                                    text(
+                                                                      ' ${nbrFlacons.toStringAsFixed(nbrFlacons.truncateToDouble() == nbrFlacons ? 0 : 3)} flacons de ${selectedMedic.medicNom}',
+                                                                      textColor:
+                                                                          t5DarkRed,
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            Container(
+                                                              margin: EdgeInsets
+                                                                  .only(
+                                                                      left: 16,
+                                                                      top: 16,
+                                                                      right:
+                                                                          16),
+                                                              decoration:
+                                                                  boxDecoration(
+                                                                      radius:
+                                                                          16,
+                                                                      showShadow:
+                                                                          true,
+                                                                      bgColor:
+                                                                          t6white),
+                                                              child: Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .all(
+                                                                        16.0),
+                                                                child: Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .spaceBetween,
+                                                                  children: <
+                                                                      Widget>[
+                                                                    text(
+                                                                        'Reliquat:',
+                                                                        textColor:
+                                                                            t6textColorPrimary,
+                                                                        fontFamily:
+                                                                            fontMedium),
+                                                                    text(
+                                                                      ' ${reliquat.toStringAsFixed(reliquat.truncateToDouble() == reliquat ? 0 : 3)} ml',
+                                                                      textColor:
+                                                                          t5DarkRed,
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            Container(
+                                                              margin: EdgeInsets
+                                                                  .only(
+                                                                      left: 16,
+                                                                      top: 16,
+                                                                      right:
+                                                                          16),
+                                                              decoration:
+                                                                  boxDecoration(
+                                                                      radius:
+                                                                          16,
+                                                                      showShadow:
+                                                                          true,
+                                                                      bgColor:
+                                                                          t6white),
+                                                              child: Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .all(
+                                                                        16.0),
+                                                                child: Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .spaceBetween,
+                                                                  children: <
+                                                                      Widget>[
+                                                                    text(
+                                                                        'La poche',
+                                                                        textColor:
+                                                                            t6textColorPrimary,
+                                                                        fontFamily:
+                                                                            fontMedium),
+                                                                    text(
+                                                                      '[${minPoche.toStringAsFixed(0)}, ${maxPoche.toStringAsFixed(0)}] ml',
+                                                                      textColor:
+                                                                          t5DarkRed,
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            );
+                                          });
+                                    });
+                                  });
+
                               _submit(context);
                             },
                           ),

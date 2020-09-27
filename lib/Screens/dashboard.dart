@@ -3,14 +3,10 @@ import 'package:graduation/Screens/Medics.dart';
 import 'package:graduation/Screens/Patients.dart';
 import 'package:graduation/Screens/T5Images.dart';
 import 'package:graduation/Screens/colors.dart';
-import 'package:graduation/Screens/constants.dart';
 import 'package:graduation/Screens/editMedic.dart';
 import 'package:graduation/Screens/extensions.dart';
 import 'package:graduation/Screens/home.dart';
-import 'package:graduation/Widgets/BottomBar.dart';
 import 'package:graduation/Widgets/BubbleBottomBar.dart';
-import 'package:graduation/Widgets/GridListDashboard.dart';
-import 'package:graduation/Widgets/ListModel.dart';
 import 'package:graduation/cubit/patient_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -31,11 +27,7 @@ class _DashboardState extends State<Dashboard> {
     Medicaments(),
   ];
 
-  void _onItemTapped(int index) {
-    setState(() {
-      selectedIndex = index;
-    });
-  }
+  
 
   @override
   void initState() {

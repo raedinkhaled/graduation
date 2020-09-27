@@ -1,32 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:graduation/Screens/Medics.dart';
 import 'package:graduation/Screens/Patients.dart' as pat;
 import 'package:graduation/Screens/colors.dart';
 import 'package:graduation/Screens/constants.dart';
 import 'package:graduation/Screens/dashboard.dart';
-import 'package:graduation/Screens/editMedic.dart';
 import 'package:graduation/Screens/extensions.dart';
 import 'package:graduation/Screens/widget.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graduation/cubit/medics_cubit.dart';
 import 'package:graduation/cubit/reliquats_cubit.dart';
 import 'package:graduation/data/moor_database.dart';
 
-class Medicaments extends StatefulWidget {
+class Reliquats extends StatefulWidget {
   @override
-  _MedicamentsState createState() => _MedicamentsState();
+  _ReliquatsState createState() => _ReliquatsState();
+  
 }
 
-class _MedicamentsState extends State<Medicaments> {
+class _ReliquatsState extends State<Reliquats> {
   var pages = [Dashboard(), pat.Patients(), Medicaments()];
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
+  
   @override
   Widget build(BuildContext context) {
-    final medicCubit = context.bloc<MedicsCubit>();
+    final reliquatCubit = context.bloc<ReliquatsCubit>();
     changeStatusColor(t5DarkNavy);
     var width = MediaQuery.of(context).size.width;
     width = width - 50;
@@ -41,7 +37,7 @@ class _MedicamentsState extends State<Medicaments> {
               Row(
                 children: <Widget>[
                   SizedBox(width: 16),
-                  text("Les Medicaments",
+                  text("Les Reliquats",
                       textColor: t5White,
                       fontSize: textSizeNormal,
                       fontFamily: fontMedium)
@@ -72,36 +68,36 @@ class _MedicamentsState extends State<Medicaments> {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(24.0),
-                    child: BlocBuilder<MedicsCubit, MedicsState>(
+                    child: BlocBuilder<ReliquatsCubit, ReliquatsState>(
                       builder: (context, state) {
-                        if (state is MedicsInitial) {
+                        if (state is ReliquatsInitial) {
                           return StreamBuilder(
-                            stream: medicCubit.medicDao.watchAllMedics(),
-                            builder:
-                                (context, AsyncSnapshot<List<Medic>> snapshot) {
-                              final medics = snapshot.data ?? List();
+                            stream: reliquatCubit.reliquatDao.watchAllReliquats(),
+                            builder: (context,
+                                AsyncSnapshot<List<ReliquatWithMedics>> snapshot) {
+                              final reliquats = snapshot.data ?? List();
                               return ListView.builder(
-                                itemCount: medics.length,
+                                itemCount: reliquats.length,
                                 itemBuilder: (_, index) {
-                                  final itemMedic = medics[index];
-                                  return buildMedic(context, itemMedic,
-                                      medicCubit.medicDao, medics.length);
+                                  final itemReliquat = reliquats[index];
+                                  return buildReliquat(context, itemReliquat,
+                                      reliquatCubit.reliquatDao, reliquats.length);
                                 },
                               );
                             },
                           );
                         }
                         return StreamBuilder(
-                          stream: medicCubit.medicDao.watchAllMedics(),
+                          stream: reliquatCubit.reliquatDao.watchAllReliquats(),
                           builder:
-                              (context, AsyncSnapshot<List<Medic>> snapshot) {
-                            final medics = snapshot.data ?? List();
+                              (context, AsyncSnapshot<List<ReliquatWithMedics>> snapshot) {
+                            final reliquats = snapshot.data ?? List();
                             return ListView.builder(
-                              itemCount: medics.length,
+                              itemCount: reliquats.length,
                               itemBuilder: (_, index) {
-                                final itemMedic = medics[index];
-                                return buildMedic(context, itemMedic,
-                                    medicCubit.medicDao, medics.length);
+                                final itemReliquat = reliquats[index];
+                                return buildReliquat(context, itemReliquat,
+                                    reliquatCubit.reliquatDao, reliquats.length);
                               },
                             );
                           },
@@ -119,21 +115,9 @@ class _MedicamentsState extends State<Medicaments> {
   }
 }
 
-Widget buildMedic(
-    BuildContext context, Medic itemMedic, MedicDao medicDao, int value) {
-  final reliquatCubit = context.bloc<ReliquatsCubit>();
- double reliquat;
-  
-
-  
-
-
-    reliquatCubit.reliquatDao.sumOfReliquatsForSelectedMedic().get().then((value) => {
-      reliquat = value[0].toDouble()   });
-
-
-  
-
+Widget buildReliquat(BuildContext context, ReliquatWithMedics itemReliquat,
+    ReliquatDao reliquatDao, int value) {
+      
   return Padding(
     padding: EdgeInsets.symmetric(horizontal: 5),
     child: Column(
@@ -147,28 +131,16 @@ Widget buildMedic(
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => EditMedicScreen(medic: itemMedic),
+                  builder: (_) => null,
                 ),
               ),
               title: Text(
-                '${itemMedic.medicNom.toUpperCase()}',
+                '${itemReliquat.medic.medicNom} ${itemReliquat.reliquat.quantite} ml',
                 style: TextStyle(
                     fontWeight: FontWeight.w500, fontSize: textSizeMedium),
               ),
-              subtitle: Text('${itemMedic.medicLab}'),
-              trailing: Column(
-                children: <Widget>[
-                  text("Reliquats",
-                      fontSize: textSizeMedium,
-                      textColor: t5TextColorSecondary),
-                  Container(
-                    padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                    decoration: boxDecoration(bgColor: t5DarkRed, radius: 16),
-                    child: text("$reliquat ml",
-                        fontSize: textSizeMedium, textColor: t5White),
-                  ),
-                ],
-              ),
+              subtitle: Text(
+                  'Expire le ${itemReliquat.reliquat.date}'),
             ),
           ),
         ),

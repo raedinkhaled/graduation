@@ -6,8 +6,7 @@ import 'package:graduation/Screens/dashboard.dart';
 import 'package:graduation/Screens/extensions.dart';
 import 'package:graduation/Screens/widget.dart';
 import 'package:graduation/cubit/password_cubit.dart';
-import 'package:graduation/data/moor_database.dart';
-import 'package:provider/provider.dart';
+
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -25,7 +24,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
   @override
   void initState() {
-    // TODO: implement initState
     context.bloc<PasswordCubit>().initializePass();
     super.initState();
   }

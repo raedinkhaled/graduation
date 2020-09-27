@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:graduation/Screens/dashboard.dart';
 import 'package:graduation/Screens/login.dart';
 import 'package:graduation/cubit/doses_cubit.dart';
 import 'package:graduation/cubit/medics_cubit.dart';
 import 'package:graduation/cubit/password_cubit.dart';
 import 'package:graduation/cubit/patient_cubit.dart';
+import 'package:graduation/cubit/reliquats_cubit.dart';
 import 'package:graduation/data/moor_database.dart';
 
 void main() {
@@ -31,6 +31,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => DosesCubit(DoseDao(db)),
+        ),
+        BlocProvider(
+          create: (context) => ReliquatsCubit(ReliquatDao(db)),
         ),
       ],
       child: MaterialApp(

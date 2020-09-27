@@ -1,5 +1,3 @@
-import 'dart:html';
-
 import 'package:moor_flutter/moor_flutter.dart';
 
 part 'moor_database.g.dart';
@@ -56,7 +54,7 @@ class Reliquats extends Table {
 class AppDatabase extends _$AppDatabase {
   AppDatabase()
       : super(FlutterQueryExecutor.inDatabaseFolder(
-            path: 'mssssyds.sqlite', logStatements: true));
+            path: 'lklknsm.sqlite', logStatements: true));
 
   @override
   int get schemaVersion => 1;
@@ -160,10 +158,39 @@ class DoseDao extends DatabaseAccessor<AppDatabase> with _$DoseDaoMixin {
   Future insertDose(Insertable<Dose> dose) => into(doses).insert(dose);
 }
 
-@UseDao(tables: [Reliquats, Medics])
-class ReliquatDao extends DatabaseAccessor<AppDatabase> with _$ReliquatDaoMixin{
+class ReliquatWithMedics {
+  final Reliquat reliquat;
+  final Medic medic;
+
+  ReliquatWithMedics({@required this.medic, @required this.reliquat});
+}
+
+@UseDao(tables: [Reliquats, Medics],queries: {
+  'sumOfReliquatsForSelectedMedic':
+    'SELECT SUM(quantite) FROM reliquats'
+})
+class ReliquatDao extends DatabaseAccessor<AppDatabase>
+    with _$ReliquatDaoMixin {
   final AppDatabase db;
   ReliquatDao(this.db) : super(db);
 
-  Future insertReliquat(Insertable<Reliquat> reliquat) => into(reliquats).insert(reliquat);
+  Stream<List<ReliquatWithMedics>> watchAllReliquats() => select(reliquats)
+      .join([
+        leftOuterJoin(medics, medics.medicID.equalsExp(reliquats.medicid)),
+      ])
+      .watch()
+      .map((rows) => rows.map((row) {
+            return ReliquatWithMedics(
+                medic: row.readTable(medics),
+                reliquat: row.readTable(reliquats));
+          }).toList());
+
+          Future insertReliquat(Insertable<Reliquat> reliquat) =>
+      into(reliquats).insert(reliquat);
+  Future deleteReliquat(Insertable<Reliquat> reliquat) =>
+      delete(reliquats).delete(reliquat);
+
 }
+
+  
+

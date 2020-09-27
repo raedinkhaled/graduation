@@ -1,8 +1,6 @@
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:graduation/Screens/Medics.dart';
-import 'package:graduation/Screens/T5Images.dart';
 import 'package:graduation/Screens/colors.dart';
 import 'package:graduation/Screens/constants.dart';
 import 'package:graduation/Screens/dashboard.dart';
@@ -13,7 +11,6 @@ import 'package:graduation/Widgets/ListModel.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graduation/cubit/patient_cubit.dart';
 import 'package:graduation/data/moor_database.dart';
-import 'package:moor_flutter/moor_flutter.dart' as moor;
 
 class Patients extends StatefulWidget {
   @override
@@ -26,14 +23,12 @@ class Patients extends StatefulWidget {
 class _PatientsState extends State<Patients> {
   var pages = [Dashboard(), Patients(), Medicaments()];
 
-  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   void initState() {
     super.initState();
   }
 
-  final _formKey = GlobalKey<FormState>();
 
   void dispose() {
     // Clean up the controller when the widget is disposed.
