@@ -54,7 +54,7 @@ class Reliquats extends Table {
 class AppDatabase extends _$AppDatabase {
   AppDatabase()
       : super(FlutterQueryExecutor.inDatabaseFolder(
-            path: 'lklknsm.sqlite', logStatements: true));
+            path: 'lllll.sqlite', logStatements: true)); //lklknsm
 
   @override
   int get schemaVersion => 1;
@@ -165,9 +165,17 @@ class ReliquatWithMedics {
   ReliquatWithMedics({@required this.medic, @required this.reliquat});
 }
 
-@UseDao(tables: [Reliquats, Medics],queries: {
+class ReliquatWithSum {
+  final double sum;
+  ReliquatWithSum({@required this.sum});
+}
+
+@UseDao(tables: [
+  Reliquats,
+  Medics
+], queries: {
   'sumOfReliquatsForSelectedMedic':
-    'SELECT SUM(quantite) FROM reliquats'
+      'SELECT SUM(quantite) FROM reliquats WHERE medicid=:id'
 })
 class ReliquatDao extends DatabaseAccessor<AppDatabase>
     with _$ReliquatDaoMixin {
@@ -185,12 +193,27 @@ class ReliquatDao extends DatabaseAccessor<AppDatabase>
                 reliquat: row.readTable(reliquats));
           }).toList());
 
-          Future insertReliquat(Insertable<Reliquat> reliquat) =>
+  Stream<List<ReliquatWithMedics>> watchAllReliquatsExpired() => (select(reliquats)..where((tbl) => tbl.isvalid.equals(true)))
+      .join([
+        leftOuterJoin(medics, medics.medicID.equalsExp(reliquats.medicid)),
+      ])
+      .watch()
+      .map((rows) => rows.map((row) {
+            return ReliquatWithMedics(
+                medic: row.readTable(medics),
+                reliquat: row.readTable(reliquats));
+          }).toList());
+  
+  Future<double> getSum(Medic m) async =>
+      (await sumOfReliquatsForSelectedMedic(m.medicID).getSingle());
+
+  Future insertReliquat(Insertable<Reliquat> reliquat) =>
       into(reliquats).insert(reliquat);
   Future deleteReliquat(Insertable<Reliquat> reliquat) =>
       delete(reliquats).delete(reliquat);
-
+  Future updateReliquar(Insertable<Reliquat> reliquat) {
+    return transaction(() async{
+     await update(reliquats).replace(reliquat);
+    });
+  }
 }
-
-  
-

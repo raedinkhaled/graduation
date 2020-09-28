@@ -33,7 +33,14 @@ class GridListDashboard extends StatelessWidget {
               );
               }
               else if(index == 2){
-                
+                {
+                Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => Reliquats(),
+                ),
+              );
+              }
               }
             },
             child: Container(

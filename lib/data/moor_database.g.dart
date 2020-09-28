@@ -1881,9 +1881,9 @@ mixin _$DoseDaoMixin on DatabaseAccessor<AppDatabase> {
 mixin _$ReliquatDaoMixin on DatabaseAccessor<AppDatabase> {
   $ReliquatsTable get reliquats => attachedDatabase.reliquats;
   $MedicsTable get medics => attachedDatabase.medics;
-  Selectable<double> sumOfReliquatsForSelectedMedic() {
-    return customSelect('SELECT SUM(quantite) FROM reliquats',
-            variables: [], readsFrom: {reliquats})
+  Selectable<double> sumOfReliquatsForSelectedMedic(int id) {
+    return customSelect('SELECT SUM(quantite) FROM reliquats WHERE medicid=:id',
+            variables: [Variable.withInt(id)], readsFrom: {reliquats})
         .map((QueryRow row) => row.readDouble('SUM(quantite)'));
   }
 }

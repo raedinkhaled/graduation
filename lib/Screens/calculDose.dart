@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:graduation/Screens/Doses.dart';
+import 'package:graduation/Screens/T5Images.dart';
 import 'package:graduation/Screens/colors.dart';
 import 'package:graduation/Screens/constants.dart';
 import 'package:graduation/Screens/widget.dart';
@@ -342,7 +344,7 @@ class _CalculDoseState extends State<CalculDose> {
                                                                         fontFamily:
                                                                             fontMedium),
                                                                     text(
-                                                                      ' ${doseAdministrer.toStringAsFixed(doseAdministrer.truncateToDouble() == doseAdministrer ? 0 : 3)} mg',
+                                                                      ' ${doseAdministrer.toStringAsFixed(doseAdministrer.truncateToDouble() == doseAdministrer ? 0 : 2)} mg',
                                                                       textColor:
                                                                           t5DarkRed,
                                                                     ),
@@ -543,6 +545,29 @@ class _CalculDoseState extends State<CalculDose> {
                             },
                           ),
                         ),
+                        Container(
+                          margin: EdgeInsets.symmetric(vertical: 20.0),
+                          height: 60.0,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                              color: t5DarkRed,
+                              borderRadius: BorderRadius.circular(50.0)),
+                          child: FlatButton(
+                            child: Text(
+                              'Liste des Doses Précédentes',
+                              style: TextStyle(
+                                  color: Colors.white, fontSize: 20.0),
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => DosesScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                        )
                       ],
                     ),
                   ),

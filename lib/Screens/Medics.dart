@@ -122,17 +122,14 @@ class _MedicamentsState extends State<Medicaments> {
 Widget buildMedic(
     BuildContext context, Medic itemMedic, MedicDao medicDao, int value) {
   final reliquatCubit = context.bloc<ReliquatsCubit>();
- double reliquat;
-  
+  double reliquat = 0;
 
-  
+  /*   reliquatCubit.reliquatDao.sumOfReliquatsForSelectedMedic().get().then((value) => {
+      reliquat = value[0].toDouble()   }); */
 
-
-    reliquatCubit.reliquatDao.sumOfReliquatsForSelectedMedic().get().then((value) => {
-      reliquat = value[0].toDouble()   });
-
-
-  
+  reliquatCubit.reliquatDao.getSum(itemMedic).then((value) {
+    reliquat = value;
+  });
 
   return Padding(
     padding: EdgeInsets.symmetric(horizontal: 5),
@@ -161,11 +158,20 @@ Widget buildMedic(
                   text("Reliquats",
                       fontSize: textSizeMedium,
                       textColor: t5TextColorSecondary),
-                  Container(
-                    padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                    decoration: boxDecoration(bgColor: t5DarkRed, radius: 16),
-                    child: text("$reliquat ml",
-                        fontSize: textSizeMedium, textColor: t5White),
+                  FutureBuilder<double>(
+                    future: reliquatCubit.reliquatDao.getSum(itemMedic),
+                    builder: (BuildContext context, AsyncSnapshot<double> snapshot) {
+                      if (snapshot.hasData) {
+                       return Container(
+                          padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                          decoration:
+                              boxDecoration(bgColor: t5DarkRed, radius: 16),
+                          child: text("${snapshot.data.toStringAsFixed(2)} ml",
+                              fontSize: textSizeMedium, textColor: t5White),
+                        );
+                      }
+                      return SizedBox(height: 1,);
+                    },
                   ),
                 ],
               ),
