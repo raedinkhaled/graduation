@@ -35,6 +35,8 @@ class _CalculDoseState extends State<CalculDose> {
   double maxPoche;
 
   DateTime doseCreated;
+  
+
 
   _submit(BuildContext context) {
     final doseCubit = context.bloc<DosesCubit>();
@@ -49,6 +51,7 @@ class _CalculDoseState extends State<CalculDose> {
           posolgie: moor.Value(posologie),
           date: moor.Value(doseCreated));
       doseCubit.doseDao.insertDose(doseT);
+      
     }
 
     doseAdministrer = selectedPatient.surface * posologie;
@@ -84,6 +87,7 @@ class _CalculDoseState extends State<CalculDose> {
     toUpdate = selectedMedic;
     final updatedMedic =
         toUpdate.copyWith(nbrFlacon: toUpdate.nbrFlacon + nbrFlacons);
+
     medicCubit.medicDao.updateMedic(updatedMedic);
     print(
         '${selectedPatient.patientID}, ${selectedPatient.nom}, ${selectedMedic.medicID}, $posologie, $doseCreated');
@@ -130,6 +134,7 @@ class _CalculDoseState extends State<CalculDose> {
                                   Patient patient) {
                                 return DropdownMenuItem(
                                   value: patient,
+                                
                                   child: text(
                                       '${patient.nom} ${patient.prenom}',
                                       textColor: t5DarkNavy,
@@ -153,6 +158,7 @@ class _CalculDoseState extends State<CalculDose> {
                                   },
                                   isExpanded: true,
                                   isDense: true,
+                                  
                                   hint: Text('Selectionez Patient'),
                                   decoration: InputDecoration(
                                     border: InputBorder.none,
@@ -199,7 +205,6 @@ class _CalculDoseState extends State<CalculDose> {
                               return Padding(
                                 padding: const EdgeInsets.only(left: 10.0),
                                 child: DropdownButtonFormField(
-                                  
                                   onChanged: (Medic medic) {
                                     setState(() {
                                       selectedMedic = medic;
@@ -610,6 +615,7 @@ class _CalculDoseState extends State<CalculDose> {
                                   });
 
                               _submit(context);
+                              
                             },
                           ),
                         ),

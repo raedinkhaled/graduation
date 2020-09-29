@@ -62,41 +62,38 @@ class _RapportState extends State<Rapport> {
                   children: <Widget>[
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 40),
-                      child: Expanded(
-                        child: Container(
-                          alignment: Alignment.center,
-                          decoration: boxDecoration(
-                              radius: 10, showShadow: true, bgColor: t5White),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Container(
-                                  height: width / 7,
-                                  width: width / 7,
-                                  margin: EdgeInsets.only(bottom: 4, top: 8),
-                                  padding: EdgeInsets.all(width / 30),
-                                  decoration: boxDecoration(
-                                      bgColor: t5ColorPrimaryDark, radius: 10),
-                                  child: FutureBuilder<int>(
-                                    future:
-                                        doseCubit.doseDao.getUsedMedicsToday(),
-                                    builder: (BuildContext context,
-                                        AsyncSnapshot<int> snapshot) {
-                                      if (snapshot.hasData) {
-                                        return text("${snapshot.data}",
-                                            fontFamily: fontBold,
-                                            fontSize: textSizeMedium,
-                                            textColor: t5White,
-                                            isCentered: true);
-                                      }
-                                      return SizedBox(height: 0.1);
-                                    },
-                                  )),
-                              text("Medicament Utilise",
-                                  fontSize: textSizeMedium,
-                                  fontFamily: fontBold)
-                            ],
-                          ),
+                      child: Container(
+                        alignment: Alignment.center,
+                        decoration: boxDecoration(
+                            radius: 10, showShadow: true, bgColor: t5White),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Container(
+                                height: width / 7,
+                                width: width / 7,
+                                margin: EdgeInsets.only(bottom: 4, top: 8),
+                                padding: EdgeInsets.all(width / 30),
+                                decoration: boxDecoration(
+                                    bgColor: t5ColorPrimaryDark, radius: 10),
+                                child: FutureBuilder<int>(
+                                  future:
+                                      doseCubit.doseDao.getUsedMedicsToday(),
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot<int> snapshot) {
+                                    if (snapshot.hasData) {
+                                      return text("${snapshot.data}",
+                                          fontFamily: fontBold,
+                                          fontSize: textSizeMedium,
+                                          textColor: t5White,
+                                          isCentered: true);
+                                    }
+                                    return SizedBox(height: 0.1);
+                                  },
+                                )),
+                            text("Medicament Utilise",
+                                fontSize: textSizeMedium, fontFamily: fontBold)
+                          ],
                         ),
                       ),
                     ),
@@ -174,21 +171,12 @@ Widget buildStat(BuildContext context, ReliquatWithMedics itemStat,
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                text(
-                  "Medicament",
-                  textColor: t5TextColorPrimary,
-                  fontSize: textSizeMedium,
-                  fontFamily: fontSemibold,
-                ),
-                Container(
-                              padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                              decoration:boxDecoration(bgColor: t5SkyBlue, radius: 16),
-                              child: text("${itemStat.medic.medicNom}", fontSize: textSizeMedium, textColor: t5White),
-                            ),
-              ],
+            child: Center(
+              child: text(
+                "${itemStat.medic.medicNom.toUpperCase()}",
+                fontSize: textSizeMedium,
+                fontFamily: fontSemibold,
+              ),
             ),
           ),
           Padding(
@@ -203,23 +191,126 @@ Widget buildStat(BuildContext context, ReliquatWithMedics itemStat,
                   fontFamily: fontSemibold,
                 ),
                 FutureBuilder<double>(
-                    future: reliquatCubit.reliquatDao.getSum(itemStat.medic),
-                    builder:
-                        (BuildContext context, AsyncSnapshot<double> snapshot) {
-                      if (snapshot.hasData) {
-                        return Container(
-                          padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                          decoration:
-                              boxDecoration(bgColor: t5DarkRed, radius: 16),
-                          child: text("${snapshot.data.toStringAsFixed(2)} ml",
-                              fontSize: textSizeMedium, textColor: t5White),
-                        );
-                      }
-                      return SizedBox(
-                        height: 1,
+                  future: reliquatCubit.reliquatDao.getSum(itemStat.medic),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<double> snapshot) {
+                    if (snapshot.hasData) {
+                      return Container(
+                        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                        decoration:
+                            boxDecoration(bgColor: t5DarkRed, radius: 16),
+                        child: text("${snapshot.data.toStringAsFixed(2)}ml",
+                            fontSize: textSizeMedium, textColor: t5White),
                       );
-                    },
-                  )
+                    } else {
+                      return Container(
+                        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                        decoration:
+                            boxDecoration(bgColor: t5DarkRed, radius: 16),
+                        child: text("0 ml",
+                            fontSize: textSizeMedium, textColor: t5White),
+                      );
+                    }
+                  },
+                )
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                text(
+                  "Flacons Utlisé",
+                  textColor: t5TextColorPrimary,
+                  fontSize: textSizeMedium,
+                  fontFamily: fontSemibold,
+                ),
+                Container(
+                  padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  decoration: boxDecoration(bgColor: t5SkyBlue, radius: 16),
+                  child: text("${itemStat.medic.nbrFlacon}",
+                      fontSize: textSizeMedium, textColor: t5White),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                text(
+                  "Reliquat Perimé",
+                  textColor: t5TextColorPrimary,
+                  fontSize: textSizeMedium,
+                  fontFamily: fontSemibold,
+                ),
+                FutureBuilder<double>(
+                  future:
+                      reliquatCubit.reliquatDao.getSumPerime(itemStat.medic),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<double> snapshot) {
+                    if (snapshot.hasData) {
+                      return Container(
+                        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                        decoration:
+                            boxDecoration(bgColor: t5DarkRed, radius: 16),
+                        child: text("${snapshot.data.toStringAsFixed(2)} ml",
+                            fontSize: textSizeMedium, textColor: t5White),
+                      );
+                    } else {
+                      return Container(
+                        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                        decoration:
+                            boxDecoration(bgColor: t5DarkRed, radius: 16),
+                        child: text("0 ml",
+                            fontSize: textSizeMedium, textColor: t5White),
+                      );
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                text(
+                  "Valeur Perdu",
+                  textColor: t5TextColorPrimary,
+                  fontSize: textSizeMedium,
+                  fontFamily: fontSemibold,
+                ),
+                FutureBuilder<double>(
+                  future:
+                      reliquatCubit.reliquatDao.getSumPerime(itemStat.medic),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<double> snapshot) {
+                    if (snapshot.hasData) {
+                      return Container(
+                        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                        decoration:
+                            boxDecoration(bgColor: t5SkyBlue, radius: 16),
+                        child: text(
+                            "${(snapshot.data * itemStat.medic.prix).toStringAsFixed(2)} DA",
+                            fontSize: textSizeMedium,
+                            textColor: t5White),
+                      );
+                    } else {
+                      return Container(
+                        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                        decoration:
+                            boxDecoration(bgColor: t5SkyBlue, radius: 16),
+                        child: text("0 DA",
+                            fontSize: textSizeMedium, textColor: t5White),
+                      );
+                    }
+                  },
+                ),
               ],
             ),
           ),
@@ -228,5 +319,3 @@ Widget buildStat(BuildContext context, ReliquatWithMedics itemStat,
     ),
   );
 }
-
-

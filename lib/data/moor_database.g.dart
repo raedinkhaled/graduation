@@ -1892,4 +1892,17 @@ mixin _$ReliquatDaoMixin on DatabaseAccessor<AppDatabase> {
           reliquats
         }).map((QueryRow row) => row.readDouble('SUM(quantite)'));
   }
+
+  Selectable<double> sumOfReliquatsPerimeForSelectedMedic(
+      int id, DateTime now) {
+    return customSelect(
+        'SELECT SUM(quantite) FROM reliquats WHERE medicid=:id AND date<:now',
+        variables: [
+          Variable.withInt(id),
+          Variable.withDateTime(now)
+        ],
+        readsFrom: {
+          reliquats
+        }).map((QueryRow row) => row.readDouble('SUM(quantite)'));
+  }
 }

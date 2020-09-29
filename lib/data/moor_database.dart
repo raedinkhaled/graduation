@@ -188,7 +188,9 @@ class ReliquatWithSum {
   Medics
 ], queries: {
   'sumOfReliquatsForSelectedMedic':
-      'SELECT SUM(quantite) FROM reliquats WHERE medicid=:id AND date>:now'
+      'SELECT SUM(quantite) FROM reliquats WHERE medicid=:id AND date>:now',
+  'sumOfReliquatsPerimeForSelectedMedic':
+      'SELECT SUM(quantite) FROM reliquats WHERE medicid=:id AND date<:now'
 })
 class ReliquatDao extends DatabaseAccessor<AppDatabase>
     with _$ReliquatDaoMixin {
@@ -251,6 +253,10 @@ class ReliquatDao extends DatabaseAccessor<AppDatabase>
   Future<double> getSum(Medic m) async =>
       (await sumOfReliquatsForSelectedMedic(m.medicID, DateTime.now())
           .getSingle());
+  Future<double> getSumPerime(Medic m) async =>
+      (await sumOfReliquatsPerimeForSelectedMedic(m.medicID, DateTime.now())
+          .getSingle());
+  
 
   Future insertReliquat(Insertable<Reliquat> reliquat) =>
       into(reliquats).insert(reliquat);
