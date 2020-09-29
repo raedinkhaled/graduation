@@ -35,7 +35,6 @@ class _EditMedicScreenState extends State<EditMedicScreen> {
       ci = widget.medic.cI;
       cmax = widget.medic.cMax;
       cmin = widget.medic.cMin;
-      volume = widget.medic.volume;
       prix = widget.medic.prix;
       stabilite = widget.medic.stabilite;
     }
@@ -53,7 +52,6 @@ class _EditMedicScreenState extends State<EditMedicScreen> {
           cI: moor.Value(ci),
           cMax: moor.Value(cmax),
           cMin: moor.Value(cmin),
-          volume: moor.Value(volume),
           prix: moor.Value(prix),
           stabilite: moor.Value(stabilite));
       if (widget.medic == null) {
@@ -66,7 +64,6 @@ class _EditMedicScreenState extends State<EditMedicScreen> {
             cI: ci,
             cMax: cmax,
             cMin: cmin,
-            volume: volume,
             prix: prix,
             stabilite: stabilite);
         medicCubit.medicDao.updateMedic(updatedMedic);
@@ -178,6 +175,7 @@ class _EditMedicScreenState extends State<EditMedicScreen> {
                           decoration: InputDecoration(
                             contentPadding: EdgeInsets.fromLTRB(26, 18, 4, 18),
                             hintText: "Presentation",
+                            labelText: "Presentation",
                             suffixText: 'mg/ml',
                             filled: true,
                             fillColor: t6white,
@@ -212,6 +210,7 @@ class _EditMedicScreenState extends State<EditMedicScreen> {
                           decoration: InputDecoration(
                             contentPadding: EdgeInsets.fromLTRB(26, 18, 4, 18),
                             hintText: "Concentration initiale",
+                            labelText: "CI",
                             suffixText: 'mg/ml',
                             filled: true,
                             fillColor: t6white,
@@ -245,6 +244,7 @@ class _EditMedicScreenState extends State<EditMedicScreen> {
                           decoration: InputDecoration(
                             contentPadding: EdgeInsets.fromLTRB(26, 18, 4, 18),
                             hintText: "Concentration minimale",
+                            labelText: "CMax",
                             suffixText: 'mg/ml',
                             filled: true,
                             fillColor: t6white,
@@ -278,6 +278,7 @@ class _EditMedicScreenState extends State<EditMedicScreen> {
                           decoration: InputDecoration(
                             contentPadding: EdgeInsets.fromLTRB(26, 18, 4, 18),
                             hintText: "Concentration maximale",
+                            labelText: "CMax",
                             suffixText: 'mg/ml',
                             filled: true,
                             fillColor: t6white,
@@ -303,45 +304,7 @@ class _EditMedicScreenState extends State<EditMedicScreen> {
                         children: <Widget>[
                           Expanded(
                             child: Container(
-                              margin: EdgeInsets.only(bottom: 15, right: 5),
-                              decoration: boxDecorationT6(
-                                  radius: 12,
-                                  showShadow: true,
-                                  bgColor: t6white),
-                              child: TextFormField(
-                                keyboardType: TextInputType.number,
-                                style: TextStyle(
-                                  fontSize: textSizeMedium,
-                                ),
-                                decoration: InputDecoration(
-                                  contentPadding:
-                                      EdgeInsets.fromLTRB(26, 18, 4, 18),
-                                  hintText: "Volume",
-                                  filled: true,
-                                  fillColor: t6white,
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                    borderSide: const BorderSide(
-                                        color: t6white, width: 0.0),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                    borderSide: const BorderSide(
-                                        color: t6white, width: 0.0),
-                                  ),
-                                ),
-                                validator: (input) => input.trim().isEmpty
-                                    ? 'Svp Entrez le Volume apres preparation'
-                                    : null,
-                                onSaved: (input) =>
-                                    volume = double.parse(input),
-                                initialValue: volume.toString(),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Container(
-                              margin: EdgeInsets.only(bottom: 15, left: 5),
+                              margin: EdgeInsets.only(bottom: 15),
                               decoration: boxDecorationT6(
                                   radius: 12,
                                   showShadow: true,
@@ -355,6 +318,7 @@ class _EditMedicScreenState extends State<EditMedicScreen> {
                                   contentPadding:
                                       EdgeInsets.fromLTRB(26, 18, 4, 18),
                                   hintText: "Prix",
+                                  labelText: "Prix",
                                   suffixText: 'DZ',
                                   filled: true,
                                   fillColor: t6white,
@@ -391,6 +355,7 @@ class _EditMedicScreenState extends State<EditMedicScreen> {
                           decoration: InputDecoration(
                             contentPadding: EdgeInsets.fromLTRB(26, 18, 4, 18),
                             hintText: "Stabilite",
+                            labelText: "Stabilite",
                             suffixText: 'H',
                             filled: true,
                             fillColor: t6white,

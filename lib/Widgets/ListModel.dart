@@ -6,3 +6,8 @@ class Category {
 
   var icon = "";
 }
+
+class Statistics{
+  var name="";
+  var value;
+}

@@ -101,7 +101,24 @@ class _LoginScreenState extends State<LoginScreen> {
                       )
                     ],
                   ),
-                )
+                ),
+                text("MEDICALC V1.0.0 By:",
+                    textColor: t5TextColorThird,
+                    fontFamily: fontMedium,
+                    fontSize: 18.0,
+                    latterSpacing: 1.0),
+                text(
+                  "Raedin Khaled Sakhri",
+                  textColor: t5DarkRed.withOpacity(0.85),
+                  fontFamily: fontRegular,
+                  fontSize: 18.0,
+                ),
+                text(
+                  "Lotfi Boufeligha",
+                  textColor: t5DarkRed.withOpacity(0.85),
+                  fontFamily: fontRegular,
+                  fontSize: 18.0,
+                ),
               ],
             ),
           ),

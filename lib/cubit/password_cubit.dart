@@ -5,12 +5,12 @@ import 'package:meta/meta.dart';
 part 'password_state.dart';
 
 class PasswordCubit extends Cubit<PasswordState> {
-  final PasswordDao _dao;
+  final PasswordDao dao;
   bool isCorrectPass = false;
-  PasswordCubit(this._dao) : super(PasswordInitial());
+  PasswordCubit(this.dao) : super(PasswordInitial());
   String appPass;
   initializePass(){
-    _dao.getAllPasswords().then((myPassword) {
+    dao.getAllPasswords().then((myPassword) {
       appPass = myPassword[0].pass;
     });
   }
@@ -20,6 +20,15 @@ class PasswordCubit extends Cubit<PasswordState> {
       isCorrectPass = true;
     } else {
       isCorrectPass=false;
+    }
+  }
+
+  bool checkedPass(String filledPass) {
+    print(appPass);
+    if (filledPass == appPass) {
+      return true;
+    } else {
+      return false;
     }
   }
 }

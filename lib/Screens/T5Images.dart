@@ -31,6 +31,7 @@ const t5_img_fingerprint_2 = "images/t5_fingerprint_2.svg";
 const t5_invoice = "images/t5_invoice.svg";
 const t5_light_bulb = "images/t5_light_bulb.svg";
 const t5_list_check = "images/t5_list_check.svg";
+const t1_ic_dialog = "images/t1_ic_dialog.png";
 const t5_img_notification = "images/t5_notification.svg";
 const t5_options = "images/t5_options.svg";
 const t5_paperplane = "images/t5_paperplane.svg";

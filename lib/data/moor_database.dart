@@ -24,7 +24,7 @@ class Medics extends Table {
   RealColumn get cI => real()();
   RealColumn get cMin => real()();
   RealColumn get cMax => real()();
-  RealColumn get volume => real()();
+  IntColumn get nbrFlacon => integer().withDefault(const Constant(0))();
   RealColumn get prix => real()();
   RealColumn get stabilite => real()();
 }
@@ -54,7 +54,7 @@ class Reliquats extends Table {
 class AppDatabase extends _$AppDatabase {
   AppDatabase()
       : super(FlutterQueryExecutor.inDatabaseFolder(
-            path: 'lllll.sqlite', logStatements: true)); //lklknsm
+            path: 'lllsll.sqlite', logStatements: true)); //lklknsm
 
   @override
   int get schemaVersion => 1;
@@ -138,7 +138,14 @@ class DoseWithMedicsAndPatients {
       {@required this.dose, @required this.medic, @required this.patient});
 }
 
-@UseDao(tables: [Doses, Patients, Medics])
+@UseDao(tables: [
+  Doses,
+  Patients,
+  Medics
+], queries: {
+  'countUsedMedics':
+      'SELECT COUNT(DISTINCT medicid) FROM doses'
+})
 class DoseDao extends DatabaseAccessor<AppDatabase> with _$DoseDaoMixin {
   final AppDatabase db;
   DoseDao(this.db) : super(db);
@@ -154,6 +161,12 @@ class DoseDao extends DatabaseAccessor<AppDatabase> with _$DoseDaoMixin {
                 medic: row.readTable(medics),
                 patient: row.readTable(patients));
           }).toList());
+
+  /*uture<double> getSum(Medic m) async =>
+      (await sumOfReliquatsForSelectedMedic(m.medicID,DateTime.now()).getSingle()); */
+
+  Future<int> getUsedMedicsToday() async =>
+      (await countUsedMedics().getSingle());
 
   Future insertDose(Insertable<Dose> dose) => into(doses).insert(dose);
 }
@@ -175,7 +188,7 @@ class ReliquatWithSum {
   Medics
 ], queries: {
   'sumOfReliquatsForSelectedMedic':
-      'SELECT SUM(quantite) FROM reliquats WHERE medicid=:id'
+      'SELECT SUM(quantite) FROM reliquats WHERE medicid=:id AND date>:now'
 })
 class ReliquatDao extends DatabaseAccessor<AppDatabase>
     with _$ReliquatDaoMixin {
@@ -193,27 +206,59 @@ class ReliquatDao extends DatabaseAccessor<AppDatabase>
                 reliquat: row.readTable(reliquats));
           }).toList());
 
-  Stream<List<ReliquatWithMedics>> watchAllReliquatsExpired() => (select(reliquats)..where((tbl) => tbl.isvalid.equals(true)))
-      .join([
-        leftOuterJoin(medics, medics.medicID.equalsExp(reliquats.medicid)),
-      ])
-      .watch()
-      .map((rows) => rows.map((row) {
-            return ReliquatWithMedics(
-                medic: row.readTable(medics),
-                reliquat: row.readTable(reliquats));
-          }).toList());
-  
+  Stream<List<ReliquatWithMedics>> watchStats() {
+    final query = (selectOnly(reliquats,distinct: true)..addColumns([reliquats.medicid])).join([
+      leftOuterJoin(medics, medics.medicID.equalsExp(reliquats.medicid)),
+    ]);
+
+    query.where(medics.nbrFlacon.isBiggerThanValue(0));
+
+    return query.watch().map((rows) => rows.map((row) {
+          return ReliquatWithMedics(
+              medic: row.readTable(medics), reliquat: row.readTable(reliquats));
+        }).toList());
+  }
+
+  Stream<List<ReliquatWithMedics>> watchAllReliquatsExpired() =>
+      (select(reliquats)
+            ..where((tbl) => tbl.date.isSmallerThanValue(DateTime.now())))
+          .join([
+            leftOuterJoin(medics, medics.medicID.equalsExp(reliquats.medicid)),
+          ])
+          .watch()
+          .map((rows) => rows.map((row) {
+                return ReliquatWithMedics(
+                    medic: row.readTable(medics),
+                    reliquat: row.readTable(reliquats));
+              }).toList());
+
+  Stream<List<ReliquatWithMedics>> watchAllReliquatsNotExpired() =>
+      (select(reliquats)
+            ..where((tbl) => tbl.date.isBiggerThanValue(DateTime.now())))
+          .join([
+            leftOuterJoin(medics, medics.medicID.equalsExp(reliquats.medicid)),
+          ])
+          .watch()
+          .map((rows) => rows.map((row) {
+                return ReliquatWithMedics(
+                    medic: row.readTable(medics),
+                    reliquat: row.readTable(reliquats));
+              }).toList());
+  Stream<List<Reliquat>> getReliquatsOfMedic(Medic m) =>
+      (select(reliquats)..where((tbl) => tbl.medicid.equals(m.medicID)))
+          .watch();
+
   Future<double> getSum(Medic m) async =>
-      (await sumOfReliquatsForSelectedMedic(m.medicID).getSingle());
+      (await sumOfReliquatsForSelectedMedic(m.medicID, DateTime.now())
+          .getSingle());
 
   Future insertReliquat(Insertable<Reliquat> reliquat) =>
       into(reliquats).insert(reliquat);
   Future deleteReliquat(Insertable<Reliquat> reliquat) =>
       delete(reliquats).delete(reliquat);
   Future updateReliquar(Insertable<Reliquat> reliquat) {
-    return transaction(() async{
-     await update(reliquats).replace(reliquat);
+    return transaction(() async {
+      await update(reliquats).replace(reliquat);
     });
   }
 }

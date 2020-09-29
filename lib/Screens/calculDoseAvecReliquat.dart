@@ -1,31 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:graduation/Screens/Doses.dart';
-import 'package:graduation/Screens/T5Images.dart';
 import 'package:graduation/Screens/colors.dart';
 import 'package:graduation/Screens/constants.dart';
 import 'package:graduation/Screens/widget.dart';
 import 'package:graduation/cubit/doses_cubit.dart';
 import 'package:graduation/cubit/medics_cubit.dart';
 import 'package:graduation/cubit/patient_cubit.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graduation/cubit/reliquats_cubit.dart';
 import 'package:graduation/data/moor_database.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:moor_flutter/moor_flutter.dart' as moor;
 
-class CalculDose extends StatefulWidget {
+class CalculDoseAvecReliquat extends StatefulWidget {
   @override
-  _CalculDoseState createState() => _CalculDoseState();
+  _CalculDoseAvecReliquatState createState() => _CalculDoseAvecReliquatState();
+  final ReliquatWithMedics selectedReliquat;
+  CalculDoseAvecReliquat({this.selectedReliquat});
 }
 
-class _CalculDoseState extends State<CalculDose> {
+class _CalculDoseAvecReliquatState extends State<CalculDoseAvecReliquat> {
   final _formKey = GlobalKey<FormState>();
   String nomPatient = "";
   String nomMedicament = "";
   int posologie = 0;
   Patient selectedPatient;
   Medic selectedMedic;
-  Medic toUpdate;
-  Reliquat selectedReliquat;
+  ReliquatWithMedics myselectedReliquat;
   double reliquat;
   double doseAdministrer;
   double volumeFinal;
@@ -35,6 +35,12 @@ class _CalculDoseState extends State<CalculDose> {
   double maxPoche;
 
   DateTime doseCreated;
+
+  @override
+  void initState() {
+    myselectedReliquat = widget.selectedReliquat;
+    super.initState();
+  }
 
   _submit(BuildContext context) {
     final doseCubit = context.bloc<DosesCubit>();
@@ -54,9 +60,11 @@ class _CalculDoseState extends State<CalculDose> {
     doseAdministrer = selectedPatient.surface * posologie;
     volumeFinal = doseAdministrer / selectedMedic.cI;
     volumeFinalInternal = volumeFinal;
+    volumeFinalInternal =
+        volumeFinalInternal - myselectedReliquat.reliquat.quantite;
     int numFlacon() {
       int nbrflacons = 0;
-      while (nbrflacons * selectedMedic.presentation < volumeFinal) {
+      while (nbrflacons * selectedMedic.presentation < volumeFinalInternal) {
         nbrflacons++;
       }
 
@@ -67,10 +75,10 @@ class _CalculDoseState extends State<CalculDose> {
     reliquat = (nbrFlacons * selectedMedic.presentation) - volumeFinalInternal;
     minPoche = doseAdministrer / selectedMedic.cMax;
     maxPoche = doseAdministrer / selectedMedic.cMin;
-    double testingReliquat = reliquat;
 
-    
-
+    final updatedMedic =
+        selectedMedic.copyWith(nbrFlacon: selectedMedic.nbrFlacon + nbrFlacons);
+    medicCubit.medicDao.updateMedic(updatedMedic);
     if (reliquat > 0) {
       final reliquatT = ReliquatsCompanion(
         medicid: moor.Value(selectedMedic.medicID),
@@ -80,11 +88,12 @@ class _CalculDoseState extends State<CalculDose> {
       );
       reliquatCubit.reliquatDao.insertReliquat(reliquatT);
     }
+    final reliquatToDelete = ReliquatsCompanion(
+      medicid: moor.Value(selectedMedic.medicID),
+      reliquatID: moor.Value(myselectedReliquat.reliquat.reliquatID),
+    );
+    reliquatCubit.reliquatDao.deleteReliquat(reliquatToDelete);
 
-    toUpdate = selectedMedic;
-    final updatedMedic =
-        toUpdate.copyWith(nbrFlacon: toUpdate.nbrFlacon + nbrFlacons);
-    medicCubit.medicDao.updateMedic(updatedMedic);
     print(
         '${selectedPatient.patientID}, ${selectedPatient.nom}, ${selectedMedic.medicID}, $posologie, $doseCreated');
   }
@@ -93,7 +102,6 @@ class _CalculDoseState extends State<CalculDose> {
   Widget build(BuildContext context) {
     final patientCubit = context.bloc<PatientCubit>();
     final medicCubit = context.bloc<MedicsCubit>();
-    final doseCubit = context.bloc<DosesCubit>();
     final reliquatCubit = context.bloc<ReliquatsCubit>();
     return Scaffold(
       appBar: AppBar(
@@ -199,7 +207,6 @@ class _CalculDoseState extends State<CalculDose> {
                               return Padding(
                                 padding: const EdgeInsets.only(left: 10.0),
                                 child: DropdownButtonFormField(
-                                  
                                   onChanged: (Medic medic) {
                                     setState(() {
                                       selectedMedic = medic;

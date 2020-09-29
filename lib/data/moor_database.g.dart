@@ -584,7 +584,7 @@ class Medic extends DataClass implements Insertable<Medic> {
   final double cI;
   final double cMin;
   final double cMax;
-  final double volume;
+  final int nbrFlacon;
   final double prix;
   final double stabilite;
   Medic(
@@ -595,7 +595,7 @@ class Medic extends DataClass implements Insertable<Medic> {
       @required this.cI,
       @required this.cMin,
       @required this.cMax,
-      @required this.volume,
+      @required this.nbrFlacon,
       @required this.prix,
       @required this.stabilite});
   factory Medic.fromData(Map<String, dynamic> data, GeneratedDatabase db,
@@ -616,8 +616,8 @@ class Medic extends DataClass implements Insertable<Medic> {
       cI: doubleType.mapFromDatabaseResponse(data['${effectivePrefix}c_i']),
       cMin: doubleType.mapFromDatabaseResponse(data['${effectivePrefix}c_min']),
       cMax: doubleType.mapFromDatabaseResponse(data['${effectivePrefix}c_max']),
-      volume:
-          doubleType.mapFromDatabaseResponse(data['${effectivePrefix}volume']),
+      nbrFlacon:
+          intType.mapFromDatabaseResponse(data['${effectivePrefix}nbr_flacon']),
       prix: doubleType.mapFromDatabaseResponse(data['${effectivePrefix}prix']),
       stabilite: doubleType
           .mapFromDatabaseResponse(data['${effectivePrefix}stabilite']),
@@ -647,8 +647,8 @@ class Medic extends DataClass implements Insertable<Medic> {
     if (!nullToAbsent || cMax != null) {
       map['c_max'] = Variable<double>(cMax);
     }
-    if (!nullToAbsent || volume != null) {
-      map['volume'] = Variable<double>(volume);
+    if (!nullToAbsent || nbrFlacon != null) {
+      map['nbr_flacon'] = Variable<int>(nbrFlacon);
     }
     if (!nullToAbsent || prix != null) {
       map['prix'] = Variable<double>(prix);
@@ -676,8 +676,9 @@ class Medic extends DataClass implements Insertable<Medic> {
       cI: cI == null && nullToAbsent ? const Value.absent() : Value(cI),
       cMin: cMin == null && nullToAbsent ? const Value.absent() : Value(cMin),
       cMax: cMax == null && nullToAbsent ? const Value.absent() : Value(cMax),
-      volume:
-          volume == null && nullToAbsent ? const Value.absent() : Value(volume),
+      nbrFlacon: nbrFlacon == null && nullToAbsent
+          ? const Value.absent()
+          : Value(nbrFlacon),
       prix: prix == null && nullToAbsent ? const Value.absent() : Value(prix),
       stabilite: stabilite == null && nullToAbsent
           ? const Value.absent()
@@ -696,7 +697,7 @@ class Medic extends DataClass implements Insertable<Medic> {
       cI: serializer.fromJson<double>(json['cI']),
       cMin: serializer.fromJson<double>(json['cMin']),
       cMax: serializer.fromJson<double>(json['cMax']),
-      volume: serializer.fromJson<double>(json['volume']),
+      nbrFlacon: serializer.fromJson<int>(json['nbrFlacon']),
       prix: serializer.fromJson<double>(json['prix']),
       stabilite: serializer.fromJson<double>(json['stabilite']),
     );
@@ -712,7 +713,7 @@ class Medic extends DataClass implements Insertable<Medic> {
       'cI': serializer.toJson<double>(cI),
       'cMin': serializer.toJson<double>(cMin),
       'cMax': serializer.toJson<double>(cMax),
-      'volume': serializer.toJson<double>(volume),
+      'nbrFlacon': serializer.toJson<int>(nbrFlacon),
       'prix': serializer.toJson<double>(prix),
       'stabilite': serializer.toJson<double>(stabilite),
     };
@@ -726,7 +727,7 @@ class Medic extends DataClass implements Insertable<Medic> {
           double cI,
           double cMin,
           double cMax,
-          double volume,
+          int nbrFlacon,
           double prix,
           double stabilite}) =>
       Medic(
@@ -737,7 +738,7 @@ class Medic extends DataClass implements Insertable<Medic> {
         cI: cI ?? this.cI,
         cMin: cMin ?? this.cMin,
         cMax: cMax ?? this.cMax,
-        volume: volume ?? this.volume,
+        nbrFlacon: nbrFlacon ?? this.nbrFlacon,
         prix: prix ?? this.prix,
         stabilite: stabilite ?? this.stabilite,
       );
@@ -751,7 +752,7 @@ class Medic extends DataClass implements Insertable<Medic> {
           ..write('cI: $cI, ')
           ..write('cMin: $cMin, ')
           ..write('cMax: $cMax, ')
-          ..write('volume: $volume, ')
+          ..write('nbrFlacon: $nbrFlacon, ')
           ..write('prix: $prix, ')
           ..write('stabilite: $stabilite')
           ..write(')'))
@@ -774,7 +775,7 @@ class Medic extends DataClass implements Insertable<Medic> {
                           $mrjc(
                               cMax.hashCode,
                               $mrjc(
-                                  volume.hashCode,
+                                  nbrFlacon.hashCode,
                                   $mrjc(prix.hashCode,
                                       stabilite.hashCode))))))))));
   @override
@@ -788,7 +789,7 @@ class Medic extends DataClass implements Insertable<Medic> {
           other.cI == this.cI &&
           other.cMin == this.cMin &&
           other.cMax == this.cMax &&
-          other.volume == this.volume &&
+          other.nbrFlacon == this.nbrFlacon &&
           other.prix == this.prix &&
           other.stabilite == this.stabilite);
 }
@@ -801,7 +802,7 @@ class MedicsCompanion extends UpdateCompanion<Medic> {
   final Value<double> cI;
   final Value<double> cMin;
   final Value<double> cMax;
-  final Value<double> volume;
+  final Value<int> nbrFlacon;
   final Value<double> prix;
   final Value<double> stabilite;
   const MedicsCompanion({
@@ -812,7 +813,7 @@ class MedicsCompanion extends UpdateCompanion<Medic> {
     this.cI = const Value.absent(),
     this.cMin = const Value.absent(),
     this.cMax = const Value.absent(),
-    this.volume = const Value.absent(),
+    this.nbrFlacon = const Value.absent(),
     this.prix = const Value.absent(),
     this.stabilite = const Value.absent(),
   });
@@ -824,7 +825,7 @@ class MedicsCompanion extends UpdateCompanion<Medic> {
     @required double cI,
     @required double cMin,
     @required double cMax,
-    @required double volume,
+    this.nbrFlacon = const Value.absent(),
     @required double prix,
     @required double stabilite,
   })  : medicNom = Value(medicNom),
@@ -833,7 +834,6 @@ class MedicsCompanion extends UpdateCompanion<Medic> {
         cI = Value(cI),
         cMin = Value(cMin),
         cMax = Value(cMax),
-        volume = Value(volume),
         prix = Value(prix),
         stabilite = Value(stabilite);
   static Insertable<Medic> custom({
@@ -844,7 +844,7 @@ class MedicsCompanion extends UpdateCompanion<Medic> {
     Expression<double> cI,
     Expression<double> cMin,
     Expression<double> cMax,
-    Expression<double> volume,
+    Expression<int> nbrFlacon,
     Expression<double> prix,
     Expression<double> stabilite,
   }) {
@@ -856,7 +856,7 @@ class MedicsCompanion extends UpdateCompanion<Medic> {
       if (cI != null) 'c_i': cI,
       if (cMin != null) 'c_min': cMin,
       if (cMax != null) 'c_max': cMax,
-      if (volume != null) 'volume': volume,
+      if (nbrFlacon != null) 'nbr_flacon': nbrFlacon,
       if (prix != null) 'prix': prix,
       if (stabilite != null) 'stabilite': stabilite,
     });
@@ -870,7 +870,7 @@ class MedicsCompanion extends UpdateCompanion<Medic> {
       Value<double> cI,
       Value<double> cMin,
       Value<double> cMax,
-      Value<double> volume,
+      Value<int> nbrFlacon,
       Value<double> prix,
       Value<double> stabilite}) {
     return MedicsCompanion(
@@ -881,7 +881,7 @@ class MedicsCompanion extends UpdateCompanion<Medic> {
       cI: cI ?? this.cI,
       cMin: cMin ?? this.cMin,
       cMax: cMax ?? this.cMax,
-      volume: volume ?? this.volume,
+      nbrFlacon: nbrFlacon ?? this.nbrFlacon,
       prix: prix ?? this.prix,
       stabilite: stabilite ?? this.stabilite,
     );
@@ -911,8 +911,8 @@ class MedicsCompanion extends UpdateCompanion<Medic> {
     if (cMax.present) {
       map['c_max'] = Variable<double>(cMax.value);
     }
-    if (volume.present) {
-      map['volume'] = Variable<double>(volume.value);
+    if (nbrFlacon.present) {
+      map['nbr_flacon'] = Variable<int>(nbrFlacon.value);
     }
     if (prix.present) {
       map['prix'] = Variable<double>(prix.value);
@@ -933,7 +933,7 @@ class MedicsCompanion extends UpdateCompanion<Medic> {
           ..write('cI: $cI, ')
           ..write('cMin: $cMin, ')
           ..write('cMax: $cMax, ')
-          ..write('volume: $volume, ')
+          ..write('nbrFlacon: $nbrFlacon, ')
           ..write('prix: $prix, ')
           ..write('stabilite: $stabilite')
           ..write(')'))
@@ -1022,16 +1022,13 @@ class $MedicsTable extends Medics with TableInfo<$MedicsTable, Medic> {
     );
   }
 
-  final VerificationMeta _volumeMeta = const VerificationMeta('volume');
-  GeneratedRealColumn _volume;
+  final VerificationMeta _nbrFlaconMeta = const VerificationMeta('nbrFlacon');
+  GeneratedIntColumn _nbrFlacon;
   @override
-  GeneratedRealColumn get volume => _volume ??= _constructVolume();
-  GeneratedRealColumn _constructVolume() {
-    return GeneratedRealColumn(
-      'volume',
-      $tableName,
-      false,
-    );
+  GeneratedIntColumn get nbrFlacon => _nbrFlacon ??= _constructNbrFlacon();
+  GeneratedIntColumn _constructNbrFlacon() {
+    return GeneratedIntColumn('nbr_flacon', $tableName, false,
+        defaultValue: const Constant(0));
   }
 
   final VerificationMeta _prixMeta = const VerificationMeta('prix');
@@ -1067,7 +1064,7 @@ class $MedicsTable extends Medics with TableInfo<$MedicsTable, Medic> {
         cI,
         cMin,
         cMax,
-        volume,
+        nbrFlacon,
         prix,
         stabilite
       ];
@@ -1123,11 +1120,9 @@ class $MedicsTable extends Medics with TableInfo<$MedicsTable, Medic> {
     } else if (isInserting) {
       context.missing(_cMaxMeta);
     }
-    if (data.containsKey('volume')) {
-      context.handle(_volumeMeta,
-          volume.isAcceptableOrUnknown(data['volume'], _volumeMeta));
-    } else if (isInserting) {
-      context.missing(_volumeMeta);
+    if (data.containsKey('nbr_flacon')) {
+      context.handle(_nbrFlaconMeta,
+          nbrFlacon.isAcceptableOrUnknown(data['nbr_flacon'], _nbrFlaconMeta));
     }
     if (data.containsKey('prix')) {
       context.handle(
@@ -1877,13 +1872,24 @@ mixin _$DoseDaoMixin on DatabaseAccessor<AppDatabase> {
   $DosesTable get doses => attachedDatabase.doses;
   $PatientsTable get patients => attachedDatabase.patients;
   $MedicsTable get medics => attachedDatabase.medics;
+  Selectable<int> countUsedMedics() {
+    return customSelect('SELECT COUNT(DISTINCT medicid) FROM doses',
+            variables: [], readsFrom: {doses})
+        .map((QueryRow row) => row.readInt('COUNT(DISTINCT medicid)'));
+  }
 }
 mixin _$ReliquatDaoMixin on DatabaseAccessor<AppDatabase> {
   $ReliquatsTable get reliquats => attachedDatabase.reliquats;
   $MedicsTable get medics => attachedDatabase.medics;
-  Selectable<double> sumOfReliquatsForSelectedMedic(int id) {
-    return customSelect('SELECT SUM(quantite) FROM reliquats WHERE medicid=:id',
-            variables: [Variable.withInt(id)], readsFrom: {reliquats})
-        .map((QueryRow row) => row.readDouble('SUM(quantite)'));
+  Selectable<double> sumOfReliquatsForSelectedMedic(int id, DateTime now) {
+    return customSelect(
+        'SELECT SUM(quantite) FROM reliquats WHERE medicid=:id AND date>:now',
+        variables: [
+          Variable.withInt(id),
+          Variable.withDateTime(now)
+        ],
+        readsFrom: {
+          reliquats
+        }).map((QueryRow row) => row.readDouble('SUM(quantite)'));
   }
 }

@@ -19,7 +19,7 @@ class _HomeState extends State<Home> {
     var list = List<Category>();
 
     var category1 = Category();
-    category1.name = "Patients";
+    category1.name = "Rapport fin Journee";
     category1.color = t5Cat1;
     category1.icon = t5_paperplane;
     list.add(category1);

@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:graduation/Screens/Medics.dart';
-import 'package:graduation/Screens/Patients.dart' as pat;
+
+import 'package:graduation/Screens/calculDoseAvecReliquat.dart';
 import 'package:graduation/Screens/colors.dart';
 import 'package:graduation/Screens/constants.dart';
-import 'package:graduation/Screens/dashboard.dart';
 import 'package:graduation/Screens/extensions.dart';
 import 'package:graduation/Screens/widget.dart';
-import 'package:graduation/cubit/medics_cubit.dart';
 import 'package:graduation/cubit/reliquats_cubit.dart';
 import 'package:graduation/data/moor_database.dart';
 import 'package:intl/intl.dart';
@@ -102,15 +100,6 @@ class _ReliquatsState extends State<Reliquats> {
                                     itemCount: reliquats.length,
                                     itemBuilder: (_, index) {
                                       final itemReliquat = reliquats[index];
-                                      if (itemReliquat.reliquat.date
-                                          .isAfter(DateTime.now())) {
-                                        final updatedReliquat = itemReliquat
-                                            .reliquat
-                                            .copyWith(isvalid: false);
-                                        reliquatCubit.reliquatDao
-                                            .updateReliquar(updatedReliquat);
-                                      }
-
                                       return Slidable(
                                         actionPane: SlidableDrawerActionPane(),
                                         secondaryActions: <Widget>[
@@ -124,6 +113,24 @@ class _ReliquatsState extends State<Reliquats> {
                                                     itemReliquat.reliquat),
                                           )
                                         ],
+                                        actions: itemReliquat.reliquat.date.isAfter(DateTime.now()) ? <Widget>[
+                                          IconSlideAction(
+                                              caption: 'Utiliser',
+                                              color: t5ColorPrimary,
+                                              icon: Icons.add_circle,
+                                              onTap: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (_) =>
+                                                        CalculDoseAvecReliquat(
+                                                      selectedReliquat:
+                                                          itemReliquat,
+                                                    ),
+                                                  ),
+                                                );
+                                              })
+                                        ]: null,
                                         child: buildReliquat(
                                           context,
                                           itemReliquat,
@@ -150,16 +157,26 @@ class _ReliquatsState extends State<Reliquats> {
                                   itemCount: reliquats.length,
                                   itemBuilder: (_, index) {
                                     final itemReliquat = reliquats[index];
-                                    if (itemReliquat.reliquat.date
-                                        .isAfter(DateTime.now())) {
-                                      final updatedReliquat = itemReliquat
-                                          .reliquat
-                                          .copyWith(isvalid: false);
-                                      reliquatCubit.reliquatDao
-                                          .updateReliquar(updatedReliquat);
-                                    }
                                     return Slidable(
                                       actionPane: SlidableDrawerActionPane(),
+                                      actions: itemReliquat.reliquat.date.isAfter(DateTime.now()) ? <Widget>[
+                                        IconSlideAction(
+                                            caption: 'Utiliser',
+                                            color: t5ColorPrimary,
+                                            icon: Icons.add_circle,
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (_) =>
+                                                      CalculDoseAvecReliquat(
+                                                    selectedReliquat:
+                                                        itemReliquat,
+                                                  ),
+                                                ),
+                                              );
+                                            })
+                                      ]: null,
                                       secondaryActions: <Widget>[
                                         IconSlideAction(
                                           caption: 'Supprimer',
@@ -215,7 +232,7 @@ Widget buildReliquat(BuildContext context, ReliquatWithMedics itemReliquat,
               ),
               subtitle: Text(
                   'Expire le ${DateFormat('dd-MM-yyyy • H:m').format(itemReliquat.reliquat.date)}'),
-              trailing: itemReliquat.reliquat.isvalid
+              trailing: itemReliquat.reliquat.date.isBefore(DateTime.now())
                   ? text("Perimé", textColor: t5DarkRed)
                   : null,
             ),
