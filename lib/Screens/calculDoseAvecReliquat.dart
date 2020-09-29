@@ -76,9 +76,9 @@ class _CalculDoseAvecReliquatState extends State<CalculDoseAvecReliquat> {
     minPoche = doseAdministrer / selectedMedic.cMax;
     maxPoche = doseAdministrer / selectedMedic.cMin;
 
-    final updatedMedic =
+    /* final updatedMedic =
         selectedMedic.copyWith(nbrFlacon: selectedMedic.nbrFlacon + nbrFlacons);
-    medicCubit.medicDao.updateMedic(updatedMedic);
+    medicCubit.medicDao.updateMedic(updatedMedic); */
     if (reliquat > 0) {
       final reliquatT = ReliquatsCompanion(
         medicid: moor.Value(selectedMedic.medicID),

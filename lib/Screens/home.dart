@@ -21,12 +21,12 @@ class _HomeState extends State<Home> {
     var category1 = Category();
     category1.name = "Rapport fin Journee";
     category1.color = t5Cat1;
-    category1.icon = t5_paperplane;
+    category1.icon = t5_wallet;
     list.add(category1);
     var category2 = Category();
     category2.name = "Medicaments";
     category2.color = t5Cat2;
-    category2.icon = t5_wallet;
+    category2.icon = t5_paperplane;
     list.add(category2);
     var category3 = Category();
     category3.name = "Relicats";
